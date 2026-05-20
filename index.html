@@ -1168,10 +1168,14 @@ function buildKbDetectScript(kb) {
 # Vérifie si la mise à jour est installée sur la machine locale
 $kb = "${kb}"
 
-$installe = Get-HotFix | Where-Object { $_.HotFixID -eq $kb }
+$Session  = New-Object -ComObject Microsoft.Update.Session
+$Searcher = $Session.CreateUpdateSearcher()
+$Updates  = $Searcher.Search("IsInstalled=1").Updates
+
+$installe = $Updates | Where-Object { $_.KBArticleIDs -contains $kb.TrimStart("KBkb") }
 
 if ($installe) {
-    Write-Host "✅ INSTALLÉ  — $kb est présent (installé le $($installe.InstalledOn))." -ForegroundColor Green
+    Write-Host "✅ INSTALLÉ  — $kb est présent : $($installe | Select-Object -First 1 -ExpandProperty Title)" -ForegroundColor Green
 } else {
     Write-Host "⚠️  ABSENT   — $kb n'est pas installé sur cette machine." -ForegroundColor Red
 }`;
@@ -1182,10 +1186,14 @@ function buildCveDetectScript(cveId, kbs) {
   const kbArray = kbs.map(k => `"${k}"`).join(', ');
   return `# Détection ${cveId}
 # Vérifie si les correctifs sont installés sur la machine locale
-$cveId        = "${cveId}"
-$kbCorrecifs  = @(${kbArray})
+$cveId       = "${cveId}"
+$kbCorrecifs = @(${kbArray})
 
-$installes = (Get-HotFix | Select-Object -ExpandProperty HotFixID) -replace "^KB", "KB"
+$Session  = New-Object -ComObject Microsoft.Update.Session
+$Searcher = $Session.CreateUpdateSearcher()
+$Updates  = $Searcher.Search("IsInstalled=1").Updates
+$installes = $Updates | ForEach-Object { $_.KBArticleIDs } | ForEach-Object { "KB$_" }
+
 $manquants = $kbCorrecifs | Where-Object { $installes -notcontains $_ }
 
 if ($manquants.Count -eq 0) {
