@@ -230,6 +230,14 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
   <div id="cvePager"></div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════ KB DETAIL -->
+<div id="panel-kb-detail" class="panel">
+  <div style="margin-bottom:20px">
+    <button class="sec" onclick="goBack()">← Retour</button>
+  </div>
+  <div id="kbDetailContent"></div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════ MAPPING -->
 <div id="panel-mapping" class="panel">
   <div class="fbar">
@@ -552,6 +560,7 @@ const S = {
   month:   null,
   kbPage:  1,
   cvePage: 1,
+  prevTab: 'dashboard',
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -1182,38 +1191,56 @@ function showCVE(id) {
 
 function showKB(kb) {
   const e = S.kbMap.get(kb); if (!e) return;
+  closeModal();
+  S.prevTab = document.querySelector('.tab.active')?.dataset.tab || 'dashboard';
+
   const crit = e.cves.filter(c => c.severity === 'Critical').length;
   const expl = e.cves.filter(c => c.exploited).length;
 
   const cveBadges = e.cves.map(c =>
     `<span class="${bc(c.severity)}" style="cursor:pointer;font-size:.72rem"
-           onclick="closeModal();showCVE('${c.cveId}')"
+           onclick="showCVE('${c.cveId}')"
            title="${c.title.replace(/"/g,"'")}">
       ${c.cveId}${c.exploited?' 🚨':''}
      </span>`).join(' ');
 
-  document.getElementById('modalTitle').innerHTML =
-    `<span class="kblink">${kb}</span> &nbsp;<span class="${bc(e.maxSev)}">${e.maxSev}</span>`;
-
-  document.getElementById('modalBody').innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
-      <div class="msec"><h4>CVEs couverts</h4><strong style="font-size:1.6rem;color:var(--blue)">${e.cves.length}</strong></div>
-      <div class="msec"><h4>Critiques</h4><strong style="font-size:1.6rem;color:var(--red)">${crit}</strong></div>
-      <div class="msec"><h4>Exploitées</h4><strong style="font-size:1.6rem;color:var(--orange)">${expl}</strong></div>
+  document.getElementById('kbDetailContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap">
+      <span class="kblink" style="font-size:1.4rem;font-weight:700">${kb}</span>
+      <span class="${bc(e.maxSev)}">${e.maxSev}</span>
+      ${e.hasExpl ? '<span class="b b-exp">🚨 EXPLOIT</span>' : ''}
     </div>
-    <div class="msec"><h4>CVEs corrigés par ce KB</h4><div class="tags" style="margin-top:6px">${cveBadges}</div></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="msec"><h4>CVEs couverts</h4><strong style="font-size:2rem;color:var(--blue)">${e.cves.length}</strong></div>
+      <div class="msec"><h4>Critiques</h4><strong style="font-size:2rem;color:var(--red)">${crit}</strong></div>
+      <div class="msec"><h4>Exploitées</h4><strong style="font-size:2rem;color:var(--orange)">${expl}</strong></div>
+    </div>
+    <div class="msec"><h4>CVEs corrigés par ce KB</h4><div class="tags" style="margin-top:8px">${cveBadges}</div></div>
     <div class="msec"><h4>Produits (${e.products.size})</h4>
-      <p style="font-size:.8rem;color:var(--muted)">${[...e.products].slice(0,15).join(', ')}${e.products.size>15?` +${e.products.size-15}`:''}…</p>
+      <p style="font-size:.82rem;color:var(--muted)">${[...e.products].join(', ')}</p>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
       <a href="https://support.microsoft.com/search/results?query=${kb}" target="_blank">
         <button>🔗 Support Microsoft</button></a>
       <a href="https://catalog.update.microsoft.com/Search.aspx?q=${kb}" target="_blank">
         <button class="sec">📦 Update Catalog</button></a>
-      <button class="sec" onclick="closeModal();quickKB('${kb}')">💻 Générer PS Script</button>
+      <button class="sec" onclick="quickKB('${kb}')">💻 Générer PS Script</button>
     </div>`;
 
-  document.getElementById('overlay').classList.add('open');
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-kb-detail').classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function goBack() {
+  const tab = S.prevTab || 'dashboard';
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  const btn = document.querySelector(`.tab[data-tab="${tab}"]`);
+  if (btn) btn.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  window.scrollTo(0, 0);
 }
 
 function closeModal(e) {
