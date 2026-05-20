@@ -157,7 +157,7 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
   <div class="hcontrols">
     <button onclick="loadData()" id="btnRefresh">⟳ Actualiser</button>
     <button class="sec" onclick="cycleProxy()" id="btnProxy" title="Changer de mode si erreur CORS">🌐 Direct</button>
-    <span class="muted" id="lastUpdate">Non chargé</span>
+    <span class="muted" id="lastUpdate" style="cursor:pointer" title="Voir le changelog" onclick="window.open('changelog.html','_blank')">Non chargé</span>
   </div>
 </header>
 
@@ -561,7 +561,7 @@ foreach ($pc in $Computers) {
 // ══════════════════════════════════════════════════════════════════
 //  VERSION — bump on each modification
 // ══════════════════════════════════════════════════════════════════
-const APP_VERSION = 'v1.2.2';
+const APP_VERSION = 'v1.2.3';
 
 // ══════════════════════════════════════════════════════════════════
 //  STATE
@@ -714,8 +714,13 @@ function kbRef(kb, extraStyle) {
   return `<a class="kblink"${s} href="https://support.microsoft.com/search/results?query=${kb}" target="_blank" onclick="event.stopPropagation()">${kb}</a>`;
 }
 function kbDate(kb) {
-  const d = S.kbDates[kb];
+  const e = S.kbDates[kb];
+  const d = (typeof e === 'string') ? e : (e && e.date);   // tolerate old string format
   return (d && d !== 'unknown') ? d : '';
+}
+function kbDesc(kb) {
+  const e = S.kbDates[kb];
+  return (e && typeof e === 'object' && e.desc) ? e.desc : '';
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1043,10 +1048,12 @@ function renderKBs() {
       `<span class="tag">${p.replace('Windows ','W').replace('Server ','Srv ')}</span>`).join('');
     const more = e.products.size > 2 ? `<span class="tag">+${e.products.size-2}</span>` : '';
     const dt = kbDate(e.kb);
+    const ds = kbDesc(e.kb);
     return `<tr onclick="showKB('${e.kb}')">
       <td>
         ${kbRef(e.kb)}
         ${e.hasExpl ? '<span class="b b-exp" style="margin-left:6px">🚨 EXPLOIT</span>' : ''}
+        ${ds ? `<div style="font-size:.72rem;color:var(--muted);margin-top:2px">${ds}</div>` : ''}
       </td>
       <td style="white-space:nowrap;color:var(--muted)">${dt || '—'}</td>
       <td><span class="${bc(e.maxSev)}">${e.maxSev}</span></td>
@@ -1340,6 +1347,7 @@ function showKB(kb) {
       ${e.hasExpl ? '<span class="b b-exp">🚨 EXPLOIT</span>' : ''}
       ${kbDate(kb) ? `<span class="b" style="background:rgba(120,130,150,.15);color:var(--muted)">📅 ${kbDate(kb)}</span>` : ''}
     </div>
+    ${kbDesc(kb) ? `<p style="margin:-12px 0 18px;color:var(--muted);font-size:.9rem">${kbDesc(kb)}</p>` : ''}
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
       <div class="msec"><h4>CVEs couverts</h4><strong style="font-size:2rem;color:var(--blue)">${e.cves.length}</strong></div>
       <div class="msec"><h4>Critiques</h4><strong style="font-size:2rem;color:var(--red)">${crit}</strong></div>

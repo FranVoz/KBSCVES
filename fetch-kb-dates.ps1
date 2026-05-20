@@ -42,45 +42,81 @@ foreach ($f in $monthFiles) {
 }
 
 # -- Cache persistant ---------------------------------------------------------
+# Valeur = objet { date: "YYYY-MM-DD"|"unknown", desc: "..." }
+# (Ancien format = string date pure ; migré au chargement.)
 
 $cacheFile = Join-Path $dataDir "_kb-dates.json"
 $cache = [ordered]@{}
 if (Test-Path $cacheFile) {
     $cd = Get-Content $cacheFile -Raw -Encoding UTF8 | ConvertFrom-Json
-    if ($cd) { $cd.PSObject.Properties | ForEach-Object { $cache[$_.Name] = $_.Value } }
+    if ($cd) {
+        $cd.PSObject.Properties | ForEach-Object {
+            $v = $_.Value
+            if ($v -is [string]) {
+                # Ancien format : string date → objet sans desc
+                $cache[$_.Name] = [ordered]@{ date = $v; desc = "" }
+            } else {
+                $d = if ($v.PSObject.Properties["desc"]) { $v.desc } else { "" }
+                $cache[$_.Name] = [ordered]@{ date = $v.date; desc = $d }
+            }
+        }
+    }
 }
 
 function Save-Cache {
     $cache | ConvertTo-Json -Depth 5 | Set-Content $cacheFile -Encoding UTF8
 }
 
-function Get-KBDate([string]$kb) {
+function Format-KBDesc([string]$title) {
+    $t = $title
+    $t = $t -replace '\s*\(KB\d+\).*$', ''                                                      # coupe à "(KBxxxx)" et tout ce qui suit
+    $t = $t -replace '^\s*\d{4}-\d{2}\s+', ''                                                   # préfixe date "2026-05 "
+    $t = $t -replace '\s+for\s+(x64|x86|ARM64|Arm64)(-based)?(\s+(Systems|Client))?\s*$', ''    # " for x64-based Systems"
+    $t = $t -replace '\s+(x64|x86|ARM64|Arm64)(-based)?(\s+(Systems|Client))?\s*$', ''          # " x64-based Systems"
+    $t = $t -replace '\s+for\s*$', ''                                                           # "for" résiduel en fin
+    return ($t -replace '\s+', ' ').Trim()
+}
+
+function Get-KBInfo([string]$kb) {
     $url = "https://www.catalog.update.microsoft.com/Search.aspx?q=$kb"
     try {
         $r = Invoke-WebRequest -Uri $url -UseBasicParsing -TimeoutSec 30 -ErrorAction Stop
     } catch {
         return $null
     }
-    # Extraire toutes les dates M/D/YYYY, garder la plus ancienne (release initiale)
-    $matches = [regex]::Matches($r.Content, '(\d{1,2}/\d{1,2}/\d{4})')
-    if ($matches.Count -eq 0) { return $null }
-    $dates = $matches | ForEach-Object {
+    # Date : plus ancienne M/D/YYYY trouvée (release initiale)
+    $date = "unknown"
+    $dm = [regex]::Matches($r.Content, '(\d{1,2}/\d{1,2}/\d{4})') | ForEach-Object {
         try { [datetime]::ParseExact($_.Value, 'M/d/yyyy', [Globalization.CultureInfo]::InvariantCulture) } catch { $null }
     } | Where-Object { $_ }
-    if (-not $dates) { return $null }
-    $earliest = ($dates | Sort-Object)[0]
-    return $earliest.ToString('yyyy-MM-dd')
+    if ($dm) { $date = (($dm | Sort-Object)[0]).ToString('yyyy-MM-dd') }
+
+    # Description : premier titre d'update contenant le KB, nettoyé
+    $desc = ""
+    $tm = [regex]::Match($r.Content, '<a[^>]*>\s*([^<]*\(' + [regex]::Escape($kb) + '\)[^<]*?)\s*</a>', 'Singleline')
+    if ($tm.Success) { $desc = Format-KBDesc $tm.Groups[1].Value }
+
+    return [ordered]@{ date = $date; desc = $desc }
+}
+
+function Need-Fetch($kb) {
+    if ($Force) { return $true }
+    $e = $cache[$kb]
+    if ($null -eq $e) { return $true }
+    # Backfill : entrée sans description (ancien cache date-only)
+    if (-not $e.desc) { return $true }
+    return $false
 }
 
 # -- Boucle -------------------------------------------------------------------
 
 $kbList   = @($allKBs)
 $total    = $kbList.Count
-$toFetch  = @($kbList | Where-Object { $Force -or $null -eq $cache[$_] })
+$toFetch  = @($kbList | Where-Object { Need-Fetch $_ })
 
 Write-Host ""
-Write-Host "Dates KB — $total KB uniques, $($cache.Count) en cache, $($toFetch.Count) à récupérer$(if ($Force) {' (-Force actif)'})" -ForegroundColor Cyan
-Write-Host "Source : Microsoft Update Catalog" -ForegroundColor Gray
+Write-Host "KB info — $total KB uniques, $($cache.Count) en cache, $($toFetch.Count) à récupérer$(if ($Force) {' (-Force actif)'})" -ForegroundColor Cyan
+Write-Host "Source : Microsoft Update Catalog (date + description)" -ForegroundColor Gray
 Write-Host ""
 
 $i = 0
@@ -88,20 +124,21 @@ $ok = 0
 $fail = 0
 foreach ($kb in $kbList) {
     $i++
-    if (-not $Force -and $null -ne $cache[$kb]) {
-        Write-Host "[$i/$total] $kb — cache ($($cache[$kb]))" -ForegroundColor DarkGray
+    if (-not (Need-Fetch $kb)) {
+        Write-Host "[$i/$total] $kb — cache ($($cache[$kb].date))" -ForegroundColor DarkGray
         continue
     }
     Write-Host "[$i/$total] $kb ... " -NoNewline
-    $date = Get-KBDate $kb
-    if ($date) {
-        $cache[$kb] = $date
+    $info = Get-KBInfo $kb
+    if ($info -and $info.date -ne "unknown") {
+        $cache[$kb] = $info
         $ok++
-        Write-Host $date -ForegroundColor Green
+        Write-Host "$($info.date) — $($info.desc)" -ForegroundColor Green
     } else {
-        $cache[$kb] = "unknown"
+        $d = if ($info) { $info.desc } else { "" }
+        $cache[$kb] = [ordered]@{ date = "unknown"; desc = $d }
         $fail++
-        Write-Host "introuvable" -ForegroundColor DarkYellow
+        Write-Host "date introuvable" -ForegroundColor DarkYellow
     }
     Save-Cache
     Start-Sleep -Milliseconds 800
@@ -110,5 +147,5 @@ foreach ($kb in $kbList) {
 Save-Cache
 
 Write-Host ""
-Write-Host "✅ Terminé : $ok dates récupérées, $fail introuvables ($($cache.Count) en cache)" -ForegroundColor Green
+Write-Host "✅ Terminé : $ok récupérés, $fail sans date ($($cache.Count) en cache)" -ForegroundColor Green
 Write-Host "   Fichier : $cacheFile"

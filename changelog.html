@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>KBSCVES — Changelog</title>
+  <style>
+    :root {
+      --bg:#0d1117; --bg2:#161b22; --bg3:#21262d; --border:#30363d;
+      --text:#c9d1d9; --muted:#8b949e; --blue:#58a6ff; --green:#3fb950;
+    }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; max-width: 720px; margin: 2.5em auto; padding: 0 1.2em; background: var(--bg); color: var(--text); }
+    h1 { color: var(--blue); border-bottom: 1px solid var(--border); padding-bottom: .5em; font-size: 1.6rem; }
+    a.back { color: var(--blue); text-decoration: none; font-size: .9rem; }
+    a.back:hover { text-decoration: underline; }
+    .ver { border: 1px solid var(--border); border-radius: 8px; padding: 14px 18px; margin: 14px 0; background: var(--bg2); }
+    .ver.current { border-color: var(--green); }
+    .vhead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .vnum { color: var(--blue); font-weight: 700; font-size: 1.05rem; }
+    .vdate { font-size: .78rem; color: var(--muted); }
+    .badge { font-size: .7rem; padding: 1px 8px; border-radius: 10px; background: rgba(63,185,80,.15); color: var(--green); }
+    ul { margin: 8px 0 0; padding-left: 20px; }
+    li { font-size: .9rem; line-height: 1.7; }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← Retour au dashboard</a>
+  <h1>📋 Changelog — KBSCVES</h1>
+  <div id="list"></div>
+
+  <script>
+  // Changelog — entrée la plus récente en premier. Ajouter une entrée à chaque bump de version.
+  const CHANGELOG = [
+    { v: 'v1.2.3', d: '2026-05-20', items: [
+      'Descriptions courtes des KB (depuis le Microsoft Update Catalog)',
+      'Clic sur le numéro de version → ouvre cette page changelog',
+    ]},
+    { v: 'v1.2.2', d: '2026-05-20', items: [
+      'Retrait du bloc « Aucun scan disponible » dans le détail CVE',
+    ]},
+    { v: 'v1.2.1', d: '2026-05-20', items: [
+      'Infobulles sur les liens Microsoft Update Catalog',
+    ]},
+    { v: 'v1.2.0', d: '2026-05-20', items: [
+      'Date de release des KB (table KBs, détail KB, détail CVE)',
+    ]},
+    { v: 'v1.1.0', d: '2026-05-20', items: [
+      'Détection par présence de KB (abandon du pipeline OVAL — dépôt CIS archivé)',
+    ]},
+    { v: 'v1.0.0', d: '2026-05-20', items: [
+      'Affichage d\'une version du site (remplace la date dans l\'en-tête)',
+    ]},
+  ];
+  const current = CHANGELOG[0].v;
+  document.getElementById('list').innerHTML = CHANGELOG.map(c => `
+    <div class="ver${c.v === current ? ' current' : ''}">
+      <div class="vhead">
+        <span class="vnum">${c.v}</span>
+        <span class="vdate">${c.d}</span>
+        ${c.v === current ? '<span class="badge">actuelle</span>' : ''}
+      </div>
+      <ul>${c.items.map(i => `<li>${i}</li>`).join('')}</ul>
+    </div>`).join('');
+  </script>
+</body>
+</html>
