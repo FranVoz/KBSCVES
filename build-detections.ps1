@@ -35,15 +35,26 @@ function Save-JsonFile([string]$path, $data) {
 function Invoke-GitHub([string]$url) {
     $headers = @{ "Accept" = "application/vnd.github.v3+json"; "User-Agent" = "KBSCVES-pipeline" }
     if ($GithubToken) { $headers["Authorization"] = "Bearer $GithubToken" }
-    try {
-        $r = Invoke-WebRequest -Uri $url -Headers $headers -UseBasicParsing -ErrorAction Stop
-        return $r.Content | ConvertFrom-Json
-    } catch {
-        if ($_.Exception.Response.StatusCode -eq 403) {
-            Write-Warning "GitHub rate limit atteint. Utilisez -GithubToken pour augmenter la limite."
+    $retries = 3
+    for ($attempt = 1; $attempt -le $retries; $attempt++) {
+        try {
+            $r = Invoke-WebRequest -Uri $url -Headers $headers -UseBasicParsing -ErrorAction Stop
+            return $r.Content | ConvertFrom-Json
+        } catch {
+            $status = $_.Exception.Response.StatusCode
+            if ($status -eq 403 -or $status -eq 429) {
+                if ($GithubToken) {
+                    Write-Warning "GitHub rate limit secondaire atteint (tentative $attempt/$retries). Pause 60s..."
+                } else {
+                    Write-Warning "GitHub rate limit atteint. Utilisez -GithubToken pour augmenter la limite."
+                }
+                if ($attempt -lt $retries) { Start-Sleep -Seconds 60 } else { return $null }
+            } else {
+                return $null
+            }
         }
-        return $null
     }
+    return $null
 }
 
 function Get-OVALXml([string]$rawUrl) {
