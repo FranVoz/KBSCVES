@@ -376,8 +376,8 @@ if (`$manquants.Count -eq 0) {
         $failed++
     }
 
-    # Pause pour éviter le rate limit GitHub (1 req/s sans token)
-    if (-not $GithubToken) { Start-Sleep -Milliseconds 1100 }
+    # Search API : 30 req/min même avec token → pause fixe 2,1 s
+    Start-Sleep -Milliseconds 2100
 }
 
 # Sauvegarder
