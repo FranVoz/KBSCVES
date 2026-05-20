@@ -45,17 +45,19 @@ Write-Host "Analyse de $($data.vulns.Count) CVEs ..." -ForegroundColor Cyan
 $cveStatus = [ordered]@{}
 $vulnCount = 0
 foreach ($vuln in $data.vulns) {
-    $missing = @()
+    # Les KB couvrent plusieurs OS ; la machine n'en installe qu'UN (celui de son OS).
+    # Donc : corrigé dès qu'AU MOINS UN correctif est présent.
+    $present = @()
     foreach ($kb in $vuln.kbs) {
-        if (-not $installedKBs.ContainsKey($kb)) { $missing += $kb }
+        if ($installedKBs.ContainsKey($kb)) { $present += $kb }
     }
     $status = if ($vuln.kbs.Count -eq 0) { "unknown" }
-              elseif ($missing.Count -eq 0) { "patched" }
+              elseif ($present.Count -gt 0) { "patched" }
               else { "vulnerable" }
     if ($status -eq "vulnerable") { $vulnCount++ }
     $cveStatus[$vuln.cveId] = [ordered]@{
         status     = $status
-        missingKbs = $missing
+        missingKbs = $(if ($status -eq "vulnerable") { $vuln.kbs } else { @() })
     }
 }
 

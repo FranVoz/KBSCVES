@@ -32,6 +32,9 @@
   <script>
   // Changelog — entrée la plus récente en premier. Ajouter une entrée à chaque bump de version.
   const CHANGELOG = [
+    { v: 'v1.3.1', d: '2026-05-20', items: [
+      'Correction détection : protégé dès qu\'UN KB correctif est présent (les KB couvrent plusieurs OS, la machine n\'en installe qu\'un). Avant : faux « vulnérable » car tous les KB exigés.',
+    ]},
     { v: 'v1.3.0', d: '2026-05-20', items: [
       'Configurations logicielles affectées (NVD) sur le détail CVE — produits + plages de versions, chargés à la demande',
       'Version du site affichée comme badge cliquable dans l\'en-tête',

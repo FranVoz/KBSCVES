@@ -36,17 +36,18 @@ function Build-KBScript([string]$cveId, [string[]]$kbs) {
     $kbArray = ($kbs | ForEach-Object { "`"$_`"" }) -join ", "
     return @"
 # Détection par KB correctif : $cveId
-# Vérifie la présence des correctifs via Windows Update
+# Les KB listés couvrent plusieurs versions de Windows ; une machine n'en
+# installe qu'UN (celui de son OS). Donc : protégé dès qu'UN correctif est présent.
 `$kbCorrecifs = @($kbArray)
 `$Session  = New-Object -ComObject Microsoft.Update.Session
 `$Searcher = `$Session.CreateUpdateSearcher()
 `$Updates  = `$Searcher.Search("IsInstalled=1").Updates
 `$installes = `$Updates | ForEach-Object { `$_.KBArticleIDs } | ForEach-Object { "KB`$_" }
-`$manquants = `$kbCorrecifs | Where-Object { `$installes -notcontains `$_ }
-if (`$manquants.Count -eq 0) {
-    Write-Host "✅ PROTÉGÉ   - $cveId : correctifs présents" -ForegroundColor Green
+`$presents = `$kbCorrecifs | Where-Object { `$installes -contains `$_ }
+if (`$presents.Count -gt 0) {
+    Write-Host "✅ PROTÉGÉ   - $cveId : correctif présent (`$(`$presents -join ', '))" -ForegroundColor Green
 } else {
-    Write-Host "⚠️  VULNÉRABLE - $cveId : KBs manquants : `$(`$manquants -join ', ')" -ForegroundColor Red
+    Write-Host "⚠️  VULNÉRABLE - $cveId : aucun correctif installé (ou CVE non applicable à cet OS)" -ForegroundColor Red
 }
 "@
 }

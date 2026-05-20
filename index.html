@@ -563,7 +563,7 @@ foreach ($pc in $Computers) {
 // ══════════════════════════════════════════════════════════════════
 //  VERSION — bump on each modification
 // ══════════════════════════════════════════════════════════════════
-const APP_VERSION = 'v1.3.0';
+const APP_VERSION = 'v1.3.1';
 
 // ══════════════════════════════════════════════════════════════════
 //  STATE
@@ -1229,7 +1229,8 @@ function buildCveDetectScript(cveId, kbs) {
   if (!kbs.length) return `# Aucun KB correctif identifié pour ${cveId}\nWrite-Host "Impossible de vérifier : aucun KB associé" -ForegroundColor Yellow`;
   const kbArray = kbs.map(k => `"${k}"`).join(', ');
   return `# Détection ${cveId}
-# Vérifie si les correctifs sont installés sur la machine locale
+# Les KB couvrent plusieurs versions de Windows ; la machine n'en installe
+# qu'UN (celui de son OS). Donc : protégé dès qu'UN correctif est présent.
 $cveId       = "${cveId}"
 $kbCorrecifs = @(${kbArray})
 
@@ -1238,13 +1239,12 @@ $Searcher = $Session.CreateUpdateSearcher()
 $Updates  = $Searcher.Search("IsInstalled=1").Updates
 $installes = $Updates | ForEach-Object { $_.KBArticleIDs } | ForEach-Object { "KB$_" }
 
-$manquants = $kbCorrecifs | Where-Object { $installes -notcontains $_ }
+$presents = $kbCorrecifs | Where-Object { $installes -contains $_ }
 
-if ($manquants.Count -eq 0) {
-    Write-Host "✅ PROTÉGÉ  — $cveId : tous les correctifs sont installés." -ForegroundColor Green
+if ($presents.Count -gt 0) {
+    Write-Host "✅ PROTÉGÉ  — $cveId : correctif présent ($($presents -join ', '))." -ForegroundColor Green
 } else {
-    Write-Host "⚠️  VULNÉRABLE — $cveId : correctifs manquants :" -ForegroundColor Red
-    $manquants | ForEach-Object { Write-Host "   - $_" -ForegroundColor Red }
+    Write-Host "⚠️  VULNÉRABLE — $cveId : aucun correctif installé (ou CVE non applicable à cet OS)." -ForegroundColor Red
 }`;
 }
 
