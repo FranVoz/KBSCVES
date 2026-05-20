@@ -1,0 +1,4 @@
+node_modules/
+.claude/
+verify.mjs
+verify-dashboard.png

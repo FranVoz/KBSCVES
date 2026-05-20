@@ -151,6 +151,7 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
   <div class="hcontrols">
     <select id="selMonth" title="Mois des mises à jour" style="min-width:200px"></select>
     <button onclick="loadData()" id="btnRefresh">⟳ Actualiser</button>
+    <button class="sec" onclick="cycleProxy()" id="btnProxy" title="Changer de mode si erreur CORS">🌐 Direct</button>
     <span class="muted" id="lastUpdate">Non chargé</span>
   </div>
 </header>
@@ -538,11 +539,32 @@ const S = {
 //  API
 // ══════════════════════════════════════════════════════════════════
 const MSRC = 'https://api.msrc.microsoft.com/cvrf/v2.0';
+const CORS_PROXIES = [
+  { url: 'https://corsproxy.io/?',               encode: false, wrap: false },
+  { url: 'https://api.allorigins.win/raw?url=',  encode: true,  wrap: false },
+  { url: 'https://api.allorigins.win/get?url=',  encode: true,  wrap: true  },
+  { url: 'https://proxy.cors.sh/',               encode: false, wrap: false },
+];
+let proxyIdx = -1;
 
 async function apiFetch(url) {
-  const r = await fetch(url, { headers: { Accept: 'application/json' } });
-  if (!r.ok) throw new Error(`HTTP ${r.status} — ${url}`);
-  return r.json();
+  let fetchUrl = url;
+  let wrap = false;
+  if (proxyIdx >= 0) {
+    const p = CORS_PROXIES[proxyIdx];
+    fetchUrl = p.url + (p.encode ? encodeURIComponent(url) : url);
+    wrap = p.wrap;
+  }
+  const r = await fetch(fetchUrl, { headers: { Accept: 'application/json' } });
+  if (!r.ok) throw new Error(`HTTP ${r.status} via ${proxyIdx < 0 ? 'direct' : 'proxy' + proxyIdx}`);
+  const text = await r.text();
+  if (!text) throw new Error(`Réponse vide HTTP ${r.status} (proxy${proxyIdx})`);
+  try {
+    const data = JSON.parse(text);
+    return wrap ? JSON.parse(data.contents) : data;
+  } catch(e) {
+    throw new Error(`JSON invalide [${text.length}B]: ${text.substring(0, 150)}`);
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -652,36 +674,89 @@ document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', (
 }));
 
 // ══════════════════════════════════════════════════════════════════
+//  NVD FALLBACK (CORS-friendly, used when MSRC is inaccessible)
+// ══════════════════════════════════════════════════════════════════
+const NVD_API = 'https://services.nvd.nist.gov/rest/json/cves/2.0';
+const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function buildMonthSelector() {
+  const sel = document.getElementById('selMonth');
+  const prev = sel.value;
+  sel.innerHTML = '';
+  const now = new Date();
+  for (let i = 0; i < 18; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    const id = `${d.getFullYear()}-${MON[d.getMonth()]}`;
+    const o = document.createElement('option');
+    o.value = id;
+    o.textContent = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+      .replace(/^./, c => c.toUpperCase());
+    sel.appendChild(o);
+  }
+  if (prev) sel.value = prev;
+  sel.onchange = () => loadMonth(sel.value);
+}
+
+function parseNVD(data) {
+  const vulns = (data.vulnerabilities || []).map(item => {
+    const cve = item.cve;
+    const m31 = cve.metrics?.cvssMetricV31?.[0];
+    const m30 = cve.metrics?.cvssMetricV30?.[0];
+    const met  = m31 || m30;
+    const cvss = met?.cvssData?.baseScore ?? null;
+    const nvdSev = met?.cvssData?.baseSeverity || '';
+    const SEV_MAP = { CRITICAL:'Critical', HIGH:'Important', MEDIUM:'Moderate', LOW:'Low' };
+    const severity = SEV_MAP[nvdSev] ||
+      (cvss >= 9 ? 'Critical' : cvss >= 7 ? 'Important' : cvss >= 4 ? 'Moderate' : 'Low');
+
+    const desc  = cve.descriptions?.find(d => d.lang === 'en')?.value || '';
+    const title = desc.length > 120 ? desc.substring(0, 120) + '…' : (desc || cve.id);
+
+    const kbs = [];
+    (cve.references || []).forEach(ref => {
+      const u = ref.url || '';
+      const m = u.match(/(?:\/help\/|\/kb\/)(\d{6,7})\b/i);
+      if (m) { const kb = 'KB' + m[1]; if (!kbs.includes(kb)) kbs.push(kb); }
+      const m2 = u.match(/[?&]q=(KB\d+)/i);
+      if (m2) { const kb = m2[1].toUpperCase(); if (!kbs.includes(kb)) kbs.push(kb); }
+    });
+
+    return {
+      cveId: cve.id, title, severity,
+      exploited: !!cve.cisaExploitAdd,
+      pubDisc: false, kbs, products: [], cvss, desc,
+    };
+  });
+  return { vulns, pm: new Map() };
+}
+
+async function loadMonthFromNVD(msrcId) {
+  const [yr, mon] = msrcId.split('-');
+  const y = parseInt(yr), m = MON.indexOf(mon);
+  if (m < 0) throw new Error('Mois invalide : ' + msrcId);
+  const start = new Date(Date.UTC(y, m, 1));
+  const end   = new Date(Date.UTC(y, m + 1, 0, 23, 59, 59));
+  const fmt = d => d.toISOString().replace(/\.\d{3}Z$/, '.000');
+  const url = `${NVD_API}?sourceIdentifier=secure%40microsoft.com&pubStartDate=${fmt(start)}&pubEndDate=${fmt(end)}&resultsPerPage=2000`;
+  const data = await apiFetch(url);
+  if (!data.vulnerabilities) throw new Error('Réponse NVD invalide');
+  return parseNVD(data);
+}
+
+// ══════════════════════════════════════════════════════════════════
 //  LOAD
 // ══════════════════════════════════════════════════════════════════
 async function loadData() {
   const btn = document.getElementById('btnRefresh');
   btn.textContent = '⟳ Chargement…'; btn.disabled = true;
   clearError();
-
+  buildMonthSelector();
   try {
-    const data = await apiFetch(`${MSRC}/updates`);
-    const updates = data.value || [];
-    if (!updates.length) throw new Error('Aucune mise à jour retournée');
-
-    // Populate selector
-    const sel = document.getElementById('selMonth');
-    sel.innerHTML = '';
-    updates.slice(0, 18).forEach(u => {
-      const o = document.createElement('option');
-      o.value = u.ID || u.Alias;
-      o.textContent = u.DocumentTitle?.Value || u.ID;
-      sel.appendChild(o);
-    });
-    sel.onchange = () => loadMonth(sel.value);
-
-    await loadMonth(sel.value);
+    await loadMonth(document.getElementById('selMonth').value);
     document.getElementById('lastUpdate').textContent =
       'Mis à jour : ' + new Date().toLocaleString('fr-FR');
-
   } catch (e) {
-    showError('Erreur API MSRC : ' + e.message +
-      '. Vérifiez votre connexion internet et les paramètres CORS de votre navigateur.');
+    showError('Erreur : ' + e.message);
   } finally {
     btn.textContent = '⟳ Actualiser'; btn.disabled = false;
   }
@@ -691,19 +766,62 @@ async function loadMonth(monthId) {
   if (!monthId) return;
   S.month = monthId;
   setLoading();
+  clearError();
+  document.querySelector('.banner')?.remove();
 
+  let result, source;
+
+  // 1. Try pre-fetched static cache (data/{monthId}.json)
   try {
-    const cvrf = await apiFetch(`${MSRC}/cvrf/${monthId}`);
-    const { vulns, pm } = parseCVRF(cvrf);
-    S.vulns   = vulns;
-    S.prodMap = pm;
-    S.kbMap   = buildKBMap(vulns);
+    const r = await fetch(`data/${monthId}.json`);
+    if (r.ok) {
+      const cached = await r.json();
+      result = { vulns: cached.vulns, pm: new Map() };
+      source = 'cache';
+    }
+  } catch {}
 
-    renderDash(); renderKBs(); renderCVEs(); renderMap();
-    buildScript();
-  } catch (e) {
-    showError('Erreur chargement ' + monthId + ' : ' + e.message);
+  // 2. Try live MSRC (works direct or via proxy)
+  if (!result) {
+    try {
+      const cvrf = await apiFetch(`${MSRC}/cvrf/${monthId}`);
+      result = parseCVRF(cvrf);
+      source = 'MSRC';
+    } catch (e1) {
+      // 3. Fall back to NVD
+      try {
+        result = await loadMonthFromNVD(monthId);
+        source = 'NVD';
+      } catch (e2) {
+        showError(`MSRC : ${e1.message} | NVD : ${e2.message}`);
+        return;
+      }
+    }
   }
+
+  S.vulns   = result.vulns;
+  S.prodMap = result.pm;
+  S.kbMap   = buildKBMap(result.vulns);
+
+  if (source === 'NVD') {
+    const b = document.createElement('div');
+    b.className = 'banner';
+    b.innerHTML = `ℹ️ Source : <strong>NVD/NIST</strong> — MSRC inaccessible (CORS). Mapping KB partiel. `
+      + `<button class="sec sm" onclick="cycleProxy()">Essayer proxy MSRC</button>`;
+    document.querySelector('main').prepend(b);
+  } else if (source === 'MSRC' || source === 'cache') {
+    const label = source === 'cache' ? 'cache locale' : 'MSRC live';
+    const b = document.createElement('div');
+    b.className = 'banner';
+    b.style.background = 'rgba(63,185,80,.08)';
+    b.style.borderColor = 'rgba(63,185,80,.3)';
+    b.style.color = 'var(--green)';
+    b.textContent = `✅ Source : ${label} — données complètes KB + CVE`;
+    document.querySelector('main').prepend(b);
+  }
+
+  renderDash(); renderKBs(); renderCVEs(); renderMap();
+  buildScript();
 }
 
 function setLoading() {
@@ -1417,6 +1535,13 @@ function clearError() {
 // ══════════════════════════════════════════════════════════════════
 //  INIT
 // ══════════════════════════════════════════════════════════════════
+function cycleProxy() {
+  proxyIdx = proxyIdx < CORS_PROXIES.length - 1 ? proxyIdx + 1 : -1;
+  const labels = ['Direct', 'Proxy 1', 'Proxy 2', 'Proxy 3', 'Proxy 4'];
+  document.getElementById('btnProxy').textContent = '🌐 ' + labels[proxyIdx + 1];
+  loadData();
+}
+
 buildScript();   // Show empty template immediately
 loadData();      // Fetch live MSRC data
 </script>
