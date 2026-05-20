@@ -42,7 +42,8 @@ main{padding:20px;max-width:1440px;margin:0 auto}
 
 /* ── Stats ── */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:22px}
-.scard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s}
+.scard:hover{background:var(--bg3);border-color:var(--blue)}
 .scard h3{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
 .sval{font-size:2rem;font-weight:700}
 .c-blue .sval{color:var(--blue)} .c-purple .sval{color:var(--purple)}
@@ -169,10 +170,10 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
 <!-- ═══════════════════════════════════════════════════════ DASHBOARD -->
 <div id="panel-dashboard" class="panel active">
   <div class="stats">
-    <div class="scard c-blue"><h3>KBs du mois</h3><div class="sval" id="sKBs">—</div></div>
-    <div class="scard c-purple"><h3>CVEs corrigés</h3><div class="sval" id="sCVEs">—</div></div>
-    <div class="scard c-red"><h3>Critiques</h3><div class="sval" id="sCrit">—</div></div>
-    <div class="scard c-orange"><h3>🚨 Exploitées</h3><div class="sval" id="sExpl">—</div></div>
+    <div class="scard c-blue"   onclick="goTab('kbs',  '')"><h3>KBs du mois</h3><div class="sval" id="sKBs">—</div></div>
+    <div class="scard c-purple" onclick="goTab('cves', '')"><h3>CVEs corrigés</h3><div class="sval" id="sCVEs">—</div></div>
+    <div class="scard c-red"    onclick="goTab('cves', 'Critical')"><h3>Critiques</h3><div class="sval" id="sCrit">—</div></div>
+    <div class="scard c-orange" onclick="goTab('cves', 'exploited')"><h3>🚨 Exploitées</h3><div class="sval" id="sExpl">—</div></div>
   </div>
   <div id="dbContent"><div class="loading"><div class="spin"></div><br>Connexion à l'API MSRC…</div></div>
 </div>
@@ -666,12 +667,60 @@ function bc(s) { return `b b-${SEV_CLS[s] || 'low'}`; }
 // ══════════════════════════════════════════════════════════════════
 //  TABS
 // ══════════════════════════════════════════════════════════════════
+function goTab(tab, filter) {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${tab}"]`).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+
+  if (tab === 'kbs') {
+    document.getElementById('kbSearch').value = '';
+    document.getElementById('kbSev').value = filter;
+    renderKBs();
+  } else if (tab === 'cves') {
+    document.getElementById('cveSearch').value = '';
+    if (filter === 'exploited') {
+      document.getElementById('cveSev').value = '';
+      document.getElementById('cveExp').value = 'yes';
+    } else {
+      document.getElementById('cveSev').value = filter;
+      document.getElementById('cveExp').value = '';
+    }
+    renderCVEs();
+  }
+  window.scrollTo(0, 0);
+}
+
 document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => {
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
 }));
+
+// ══════════════════════════════════════════════════════════════════
+//  DEMO DATA (fallback when all APIs are unreachable)
+// ══════════════════════════════════════════════════════════════════
+function getDemoData() {
+  const vulns = [
+    { cveId:'CVE-2025-21333', title:'Windows Hyper-V NT Kernel Integration VSP Elevation of Privilege', severity:'Critical', exploited:true,  pubDisc:true,  kbs:['KB5050009','KB5050021'], products:['Windows 11 Version 23H2','Windows Server 2025','Windows 10 Version 22H2'], cvss:8.8, desc:'An elevation of privilege vulnerability exists in the Windows Hyper-V NT Kernel Integration VSP.' },
+    { cveId:'CVE-2025-21334', title:'Windows Hyper-V NT Kernel Integration VSP Elevation of Privilege', severity:'Critical', exploited:true,  pubDisc:false, kbs:['KB5050009','KB5050021'], products:['Windows 11 Version 23H2','Windows Server 2025'], cvss:8.8, desc:'An elevation of privilege vulnerability exists in the Windows Hyper-V NT Kernel Integration VSP.' },
+    { cveId:'CVE-2025-21335', title:'Windows Hyper-V NT Kernel Integration VSP Elevation of Privilege', severity:'Critical', exploited:true,  pubDisc:false, kbs:['KB5050009'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2'], cvss:8.8, desc:'An elevation of privilege vulnerability exists in the Windows Hyper-V NT Kernel Integration VSP.' },
+    { cveId:'CVE-2025-21298', title:'Windows OLE Remote Code Execution Vulnerability', severity:'Critical', exploited:false, pubDisc:false, kbs:['KB5050009','KB5050048'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2','Windows Server 2022','Windows Server 2019'], cvss:9.8, desc:'A remote code execution vulnerability exists in the way Windows OLE handles objects in memory.' },
+    { cveId:'CVE-2025-21311', title:'Windows NTLM V1 Elevation of Privilege Vulnerability', severity:'Critical', exploited:false, pubDisc:true,  kbs:['KB5050009','KB5050021','KB5050048'], products:['Windows 11 Version 23H2','Windows Server 2025','Windows Server 2022'], cvss:9.8, desc:'An elevation of privilege vulnerability exists in NTLM V1 authentication.' },
+    { cveId:'CVE-2025-21366', title:'Microsoft Access Remote Code Execution Vulnerability', severity:'Critical', exploited:false, pubDisc:false, kbs:['KB5002611'], products:['Microsoft Office 2019','Microsoft 365 Apps for Enterprise'], cvss:7.8, desc:'A remote code execution vulnerability exists in Microsoft Access.' },
+    { cveId:'CVE-2025-21378', title:'Windows CSC Service Elevation of Privilege Vulnerability', severity:'Important', exploited:true,  pubDisc:false, kbs:['KB5050009','KB5050048'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2','Windows Server 2022'], cvss:7.8, desc:'An elevation of privilege vulnerability exists in the Windows CSC Service.' },
+    { cveId:'CVE-2025-21374', title:'Windows CSC Service Information Disclosure Vulnerability', severity:'Important', exploited:false, pubDisc:false, kbs:['KB5050009','KB5050048'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2'], cvss:5.5, desc:'An information disclosure vulnerability exists in the Windows CSC Service.' },
+    { cveId:'CVE-2025-21340', title:'Windows Virtualization-Based Security (VBS) Security Feature Bypass', severity:'Important', exploited:false, pubDisc:true,  kbs:['KB5050009','KB5050021'], products:['Windows 11 Version 23H2','Windows Server 2025'], cvss:6.2, desc:'A security feature bypass vulnerability exists in Windows VBS.' },
+    { cveId:'CVE-2025-21382', title:'Windows Graphics Component Elevation of Privilege Vulnerability', severity:'Important', exploited:false, pubDisc:false, kbs:['KB5050009','KB5050048'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2','Windows Server 2022','Windows Server 2019'], cvss:7.8, desc:'An elevation of privilege vulnerability exists in the Windows Graphics Component.' },
+    { cveId:'CVE-2025-21257', title:'Windows WLAN AutoConfig Service Information Disclosure', severity:'Important', exploited:false, pubDisc:false, kbs:['KB5050009'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2'], cvss:5.5, desc:'An information disclosure vulnerability exists in Windows WLAN AutoConfig Service.' },
+    { cveId:'CVE-2025-21267', title:'Microsoft Edge (Chromium-based) Spoofing Vulnerability', severity:'Moderate', exploited:false, pubDisc:false, kbs:['KB5050080'], products:['Microsoft Edge (Chromium-based)'], cvss:4.3, desc:'A spoofing vulnerability exists in Microsoft Edge (Chromium-based).' },
+    { cveId:'CVE-2025-21408', title:'Microsoft Edge (Chromium-based) Remote Code Execution', severity:'Moderate', exploited:false, pubDisc:false, kbs:['KB5050080'], products:['Microsoft Edge (Chromium-based)'], cvss:6.5, desc:'A remote code execution vulnerability exists in Microsoft Edge.' },
+    { cveId:'CVE-2025-21241', title:'Windows Telephony Service Remote Code Execution Vulnerability', severity:'Important', exploited:false, pubDisc:false, kbs:['KB5050009','KB5050048'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2','Windows Server 2022'], cvss:8.8, desc:'A remote code execution vulnerability exists in the Windows Telephony Service.' },
+    { cveId:'CVE-2025-21223', title:'Windows Telephony Service Remote Code Execution Vulnerability', severity:'Important', exploited:false, pubDisc:false, kbs:['KB5050009','KB5050048'], products:['Windows 11 Version 23H2','Windows 10 Version 22H2'], cvss:8.8, desc:'A remote code execution vulnerability exists in the Windows Telephony Service.' },
+  ];
+  return { vulns, pm: new Map() };
+}
 
 // ══════════════════════════════════════════════════════════════════
 //  NVD FALLBACK (CORS-friendly, used when MSRC is inaccessible)
@@ -793,8 +842,9 @@ async function loadMonth(monthId) {
         result = await loadMonthFromNVD(monthId);
         source = 'NVD';
       } catch (e2) {
-        showError(`MSRC : ${e1.message} | NVD : ${e2.message}`);
-        return;
+        // 4. Both APIs failed — load demo data (preview / sandboxed environment)
+        result = getDemoData();
+        source = 'demo';
       }
     }
   }
@@ -803,7 +853,16 @@ async function loadMonth(monthId) {
   S.prodMap = result.pm;
   S.kbMap   = buildKBMap(result.vulns);
 
-  if (source === 'NVD') {
+  if (source === 'demo') {
+    const b = document.createElement('div');
+    b.className = 'banner';
+    b.style.background = 'rgba(210,153,34,.1)';
+    b.style.borderColor = 'rgba(210,153,34,.35)';
+    b.style.color = 'var(--yellow)';
+    b.innerHTML = `⚠️ <strong>Mode démo</strong> — APIs inaccessibles (environnement sandboxé ou hors ligne). Données simulées à titre d'illustration. `
+      + `<button class="sec sm" onclick="cycleProxy()">Essayer proxy MSRC</button>`;
+    document.querySelector('main').prepend(b);
+  } else if (source === 'NVD') {
     const b = document.createElement('div');
     b.className = 'banner';
     b.innerHTML = `ℹ️ Source : <strong>NVD/NIST</strong> — MSRC inaccessible (CORS). Mapping KB partiel. `
