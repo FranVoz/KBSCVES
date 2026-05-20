@@ -864,7 +864,7 @@ async function loadMonth(monthId) {
     const r = await fetch(`data/${monthId}.json`);
     if (r.ok) {
       const cached = await r.json();
-      result = { vulns: cached.vulns, pm: new Map() };
+      result = { vulns: cached.vulns, pm: new Map(), fetched: cached.fetched };
       source = 'cache';
     }
   } catch {}
@@ -914,7 +914,12 @@ async function loadMonth(monthId) {
     b.style.background = 'rgba(63,185,80,.08)';
     b.style.borderColor = 'rgba(63,185,80,.3)';
     b.style.color = 'var(--green)';
-    b.textContent = `✅ Source : ${label} — données complètes KB + CVE`;
+    let txt = `✅ Source : ${label} — données complètes KB + CVE`;
+    if (source === 'cache' && result.fetched) {
+      const d = new Date(result.fetched);
+      txt += ` · Mis en cache le ${d.toLocaleString('fr-FR', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' })}`;
+    }
+    b.textContent = txt;
     document.querySelector('main').prepend(b);
   }
 
