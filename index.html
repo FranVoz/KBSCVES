@@ -569,8 +569,9 @@ const S = {
   kbPage:    1,
   cvePage:   1,
   prevPanel: 'dashboard',
-  cveStatus: {},   // { cveId: { status, missingKbs[] } } — from scan-vulns.ps1
-  scanMeta:  null, // { scanned, scanHost }
+  cveStatus:    {},   // { cveId: { status, missingKbs[] } } — from scan-vulns.ps1
+  cveDetection: {},   // { cveId: { source, script } }    — from build-detections.ps1
+  scanMeta:     null, // { scanned, scanHost }
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -867,13 +868,14 @@ async function loadMonth(monthId) {
     if (r.ok) {
       const cached = await r.json();
       result = {
-        vulns:      cached.vulns,
-        pm:         new Map(),
-        fetched:    cached.fetched,
-        cveStatus:  cached.cveStatus  || {},
-        scanMeta:   (cached.scanned && cached.scanHost)
-                      ? { scanned: cached.scanned, scanHost: cached.scanHost }
-                      : null,
+        vulns:        cached.vulns,
+        pm:           new Map(),
+        fetched:      cached.fetched,
+        cveStatus:    cached.cveStatus    || {},
+        cveDetection: cached.cveDetection || {},
+        scanMeta:     (cached.scanned && cached.scanHost)
+                        ? { scanned: cached.scanned, scanHost: cached.scanHost }
+                        : null,
       };
       source = 'cache';
     }
@@ -901,8 +903,9 @@ async function loadMonth(monthId) {
   S.vulns     = result.vulns;
   S.prodMap   = result.pm;
   S.kbMap     = buildKBMap(result.vulns);
-  S.cveStatus = result.cveStatus || {};
-  S.scanMeta  = result.scanMeta  || null;
+  S.cveStatus    = result.cveStatus    || {};
+  S.cveDetection = result.cveDetection || {};
+  S.scanMeta     = result.scanMeta     || null;
 
   if (source === 'demo') {
     const b = document.createElement('div');
@@ -1223,8 +1226,12 @@ function showCVE(id) {
   const kbLinks = v.kbs.map(k => kbRef(k)).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
   const prods = v.products.slice(0,12).join(', ') +
     (v.products.length > 12 ? ` … +${v.products.length-12}` : '');
-  const psScript = buildCveDetectScript(v.cveId, v.kbs);
-  const psId = 'ps-cve-' + v.cveId.replace(/[^a-z0-9]/gi,'');
+  const detection  = S.cveDetection[v.cveId];
+  const isOval     = detection && detection.source === 'oval-cis';
+  const psScript   = detection ? detection.script : buildCveDetectScript(v.cveId, v.kbs);
+  const psLabel    = isOval ? '🔬 Script de détection OVAL (CIS)' : '🔍 Script de détection PowerShell';
+  const psDesc     = isOval ? `Détection basée sur les définitions OVAL CIS — registre, versions de fichiers` : `Vérifie si ${v.cveId} est corrigée via Windows Update`;
+  const psId       = 'ps-cve-' + v.cveId.replace(/[^a-z0-9]/gi,'');
 
   document.getElementById('cveDetailContent').innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap">
@@ -1274,8 +1281,8 @@ function showCVE(id) {
     })()}
     <div class="msec" style="margin-top:20px">
       <div class="codehdr">
-        <div><div class="codetitle">🔍 Script de détection PowerShell</div>
-          <div class="codedesc">Vérifie si ${v.cveId} est corrigée sur la machine locale</div>
+        <div><div class="codetitle">${psLabel}</div>
+          <div class="codedesc">${psDesc}</div>
         </div>
         <button class="copybtn" onclick="copyEl('${psId}',this)">📋 Copier</button>
       </div>
