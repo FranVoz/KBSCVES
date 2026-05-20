@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🛡️ MS Patch &amp; CVE Dashboard</title>
+<style>
+:root {
+  --bg:#0d1117; --bg2:#161b22; --bg3:#21262d; --border:#30363d;
+  --text:#c9d1d9; --muted:#8b949e; --blue:#58a6ff; --green:#3fb950;
+  --yellow:#d29922; --orange:#f0883e; --red:#f85149; --purple:#bc8cff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── Header ── */
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 20px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+header h1{font-size:1.1rem;color:var(--blue)}
+.hcontrols{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.muted{font-size:.75rem;color:var(--muted)}
+
+/* ── Tabs ── */
+nav.tabs{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;gap:2px}
+.tab{background:none;color:var(--muted);border:none;border-bottom:2px solid transparent;
+  padding:10px 14px;font-size:.875rem;cursor:pointer;transition:color .15s}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+
+/* ── Inputs / Buttons ── */
+select,input[type=text],textarea{background:var(--bg3);border:1px solid var(--border);
+  color:var(--text);padding:6px 10px;border-radius:6px;font-size:.85rem}
+button{background:var(--blue);color:#0d1117;border:none;padding:6px 14px;border-radius:6px;
+  cursor:pointer;font-weight:600;font-size:.85rem;transition:opacity .2s}
+button:hover{opacity:.85}
+button.sec{background:var(--bg3);color:var(--text);border:1px solid var(--border);font-weight:400}
+button.sm{padding:3px 8px;font-size:.72rem}
+
+/* ── Layout ── */
+main{padding:20px;max-width:1440px;margin:0 auto}
+.panel{display:none}.panel.active{display:block}
+
+/* ── Stats ── */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:22px}
+.scard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px;text-align:center}
+.scard h3{font-size:.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px}
+.sval{font-size:2rem;font-weight:700}
+.c-blue .sval{color:var(--blue)} .c-purple .sval{color:var(--purple)}
+.c-red .sval{color:var(--red)}   .c-orange .sval{color:var(--orange)}
+
+/* ── Tables ── */
+.tbox{background:var(--bg2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:.84rem}
+thead th{background:var(--bg3);padding:9px 12px;text-align:left;font-weight:600;
+  font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);
+  border-bottom:1px solid var(--border)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s;cursor:pointer}
+tbody tr:hover{background:var(--bg3)}
+tbody tr:last-child{border-bottom:none}
+td{padding:9px 12px;vertical-align:middle}
+
+/* ── Badges ── */
+.b{display:inline-block;padding:2px 7px;border-radius:10px;font-size:.68rem;font-weight:700;text-transform:uppercase}
+.b-crit{background:rgba(248,81,73,.18);color:var(--red);border:1px solid var(--red)}
+.b-imp {background:rgba(240,136,62,.18);color:var(--orange);border:1px solid var(--orange)}
+.b-mod {background:rgba(210,153,34,.18);color:var(--yellow);border:1px solid var(--yellow)}
+.b-low {background:rgba(63,185,80,.18);color:var(--green);border:1px solid var(--green)}
+.b-kb  {background:rgba(88,166,255,.18);color:var(--blue);border:1px solid var(--blue)}
+.b-exp {background:rgba(248,81,73,.3);color:#ff6b6b;border:1px solid #ff6b6b}
+.b-pub {background:rgba(210,153,34,.2);color:var(--yellow);border:1px solid var(--yellow)}
+
+/* ── Filter bar ── */
+.fbar{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.fbar input{flex:1;min-width:180px}
+
+/* ── Tags ── */
+.tags{display:flex;flex-wrap:wrap;gap:3px}
+.tag{background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+  padding:1px 5px;font-size:.68rem;color:var(--muted)}
+
+/* ── Code ── */
+.codeblock{background:var(--bg);border:1px solid var(--border);border-radius:6px;
+  padding:14px;font-family:'Consolas','Courier New',monospace;font-size:.78rem;
+  overflow-x:auto;white-space:pre;color:#79c0ff;line-height:1.5;max-height:420px;overflow-y:auto}
+.codehdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.codetitle{font-weight:600;color:var(--text);font-size:.9rem}
+.codedesc{font-size:.78rem;color:var(--muted);margin-top:2px}
+.copybtn{background:var(--bg3);color:var(--text);border:1px solid var(--border);
+  padding:4px 10px;font-size:.72rem;flex-shrink:0}
+.copybtn.ok{background:rgba(63,185,80,.2);color:var(--green);border-color:var(--green)}
+
+/* ── PS cards ── */
+.psgrid{display:grid;gap:18px}
+.pscard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px}
+
+/* ── Generator form ── */
+.genform{background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:18px;margin-bottom:20px}
+.genform h3{color:var(--blue);margin-bottom:14px;font-size:1rem}
+.frow{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.fgrp{flex:1;min-width:190px}
+.fgrp label{display:block;font-size:.78rem;color:var(--muted);margin-bottom:4px}
+.fgrp input,.fgrp select,.fgrp textarea{width:100%}
+textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
+
+/* ── Loading ── */
+.loading{text-align:center;padding:36px;color:var(--muted)}
+.spin{display:inline-block;width:22px;height:22px;border:2px solid var(--border);
+  border-top-color:var(--blue);border-radius:50%;animation:spin .7s linear infinite;margin-bottom:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── Error ── */
+.errmsg{background:rgba(248,81,73,.1);border:1px solid rgba(248,81,73,.3);color:var(--red);
+  padding:10px 14px;border-radius:6px;margin-bottom:14px;font-size:.84rem}
+
+/* ── Links ── */
+.kblink{color:var(--blue);text-decoration:none;font-family:monospace;font-weight:600}
+.kblink:hover{text-decoration:underline}
+.cveid{font-family:monospace;font-weight:600;color:var(--purple)}
+
+/* ── Modal ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;
+  align-items:center;justify-content:center}
+.overlay.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:22px;max-width:680px;width:92%;max-height:82vh;overflow-y:auto}
+.modalhdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;gap:10px}
+.modalclose{background:none;color:var(--muted);border:none;font-size:1.3rem;cursor:pointer;padding:0;flex-shrink:0}
+.msec{margin-bottom:14px}
+.msec h4{font-size:.72rem;color:var(--muted);text-transform:uppercase;margin-bottom:6px}
+
+/* ── Mapping ── */
+.mapitem{background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap}
+.mapkb{font-family:monospace;font-weight:700;color:var(--blue);min-width:100px;font-size:.95rem}
+
+/* ── Dashboard grid ── */
+.dbgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:820px){.dbgrid{grid-template-columns:1fr}}
+.dbsec h3{margin-bottom:10px;font-size:.9rem}
+
+/* ── Notification banner ── */
+.banner{background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);
+  color:var(--blue);padding:8px 14px;border-radius:6px;margin-bottom:14px;font-size:.82rem}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🛡️ MS Patch &amp; CVE Dashboard</h1>
+  <div class="hcontrols">
+    <select id="selMonth" title="Mois des mises à jour" style="min-width:200px"></select>
+    <button onclick="loadData()" id="btnRefresh">⟳ Actualiser</button>
+    <span class="muted" id="lastUpdate">Non chargé</span>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab active" data-tab="dashboard">📊 Dashboard</button>
+  <button class="tab" data-tab="kbs">📦 KBs</button>
+  <button class="tab" data-tab="cves">⚠️ CVEs</button>
+  <button class="tab" data-tab="mapping">🔗 KB ↔ CVE</button>
+  <button class="tab" data-tab="ps">💻 PowerShell</button>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════════════════════ DASHBOARD -->
+<div id="panel-dashboard" class="panel active">
+  <div class="stats">
+    <div class="scard c-blue"><h3>KBs du mois</h3><div class="sval" id="sKBs">—</div></div>
+    <div class="scard c-purple"><h3>CVEs corrigés</h3><div class="sval" id="sCVEs">—</div></div>
+    <div class="scard c-red"><h3>Critiques</h3><div class="sval" id="sCrit">—</div></div>
+    <div class="scard c-orange"><h3>🚨 Exploitées</h3><div class="sval" id="sExpl">—</div></div>
+  </div>
+  <div id="dbContent"><div class="loading"><div class="spin"></div><br>Connexion à l'API MSRC…</div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ KBs -->
+<div id="panel-kbs" class="panel">
+  <div class="fbar">
+    <input type="text" id="kbSearch" placeholder="🔍 Rechercher KB, CVE, produit…" oninput="renderKBs()">
+    <select id="kbSev" onchange="renderKBs()">
+      <option value="">Toutes sévérités</option>
+      <option value="Critical">🔴 Critique</option>
+      <option value="Important">🟠 Important</option>
+      <option value="Moderate">🟡 Modéré</option>
+    </select>
+    <button class="sec" onclick="exportCSV('kb')">⬇ CSV</button>
+  </div>
+  <div id="kbBox" class="tbox"><div class="loading"><div class="spin"></div></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ CVEs -->
+<div id="panel-cves" class="panel">
+  <div class="fbar">
+    <input type="text" id="cveSearch" placeholder="🔍 CVE-ID, titre, KB…" oninput="renderCVEs()">
+    <select id="cveSev" onchange="renderCVEs()">
+      <option value="">Toutes sévérités</option>
+      <option value="Critical">🔴 Critique</option>
+      <option value="Important">🟠 Important</option>
+      <option value="Moderate">🟡 Modéré</option>
+      <option value="Low">🟢 Low</option>
+    </select>
+    <select id="cveExp" onchange="renderCVEs()">
+      <option value="">Toutes</option>
+      <option value="yes">🚨 Exploitées seulement</option>
+      <option value="pub">📢 Divulguées publiquement</option>
+    </select>
+    <button class="sec" onclick="exportCSV('cve')">⬇ CSV</button>
+  </div>
+  <div id="cveBox" class="tbox"><div class="loading"><div class="spin"></div></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MAPPING -->
+<div id="panel-mapping" class="panel">
+  <div class="fbar">
+    <input type="text" placeholder="🔍 Filtrer KB ou CVE…" oninput="filterMap(this.value)" style="flex:1;min-width:200px">
+  </div>
+  <div id="mapContent"><div class="loading"><div class="spin"></div></div></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ POWERSHELL -->
+<div id="panel-ps" class="panel">
+
+  <!-- Générateur dynamique -->
+  <div class="genform">
+    <h3>⚡ Générateur de script PowerShell</h3>
+    <div class="frow">
+      <div class="fgrp">
+        <label>Type de vérification</label>
+        <select id="genType" onchange="onGenTypeChange();buildScript()">
+          <option value="kb-local">KB — Machine locale</option>
+          <option value="kb-remote">KB — Machines distantes (MSP)</option>
+          <option value="cve-local">CVE — Machine locale</option>
+          <option value="cve-remote">CVE — Machines distantes (MSP)</option>
+          <option value="audit">Audit complet du mois (MSP)</option>
+        </select>
+      </div>
+      <div class="fgrp" id="grpKB">
+        <label>Numéro KB</label>
+        <input type="text" id="genKB" placeholder="KB5034763" oninput="buildScript()">
+      </div>
+      <div class="fgrp" id="grpCVE" style="display:none">
+        <label>CVE ID</label>
+        <input type="text" id="genCVE" placeholder="CVE-2024-21447" oninput="buildScript()">
+      </div>
+      <div class="fgrp">
+        <label>Export CSV</label>
+        <select id="genCSV" onchange="buildScript()">
+          <option value="no">Non</option>
+          <option value="yes">Oui — export CSV automatique</option>
+        </select>
+      </div>
+    </div>
+    <div class="frow" id="grpComputers" style="display:none">
+      <div class="fgrp">
+        <label>Ordinateurs distants (un par ligne)</label>
+        <textarea id="genPCs" rows="3" placeholder="CLIENT1-PC01&#10;CLIENT1-SRV01&#10;CLIENT2-WS01" oninput="buildScript()"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="pscard" style="margin-bottom:20px">
+    <div class="codehdr">
+      <div>
+        <div class="codetitle" id="genTitle">🔍 Vérification KB — Machine locale</div>
+        <div class="codedesc" id="genDesc">Vérifie si un KB est installé sur la machine locale</div>
+      </div>
+      <button class="copybtn" onclick="copyEl('genOut',this)">📋 Copier</button>
+    </div>
+    <pre class="codeblock" id="genOut"></pre>
+  </div>
+
+  <h3 style="color:var(--blue);margin-bottom:16px">📚 Scripts utilitaires prêts à l'emploi</h3>
+  <div class="psgrid">
+
+    <div class="pscard">
+      <div class="codehdr">
+        <div><div class="codetitle">📋 Lister tous les KBs installés</div>
+          <div class="codedesc">Exporte l'historique complet des hotfixes avec dates</div></div>
+        <button class="copybtn" onclick="copyEl('ps1',this)">📋 Copier</button>
+      </div>
+      <pre class="codeblock" id="ps1"># Lister tous les KBs installés — triés par date
+$hotfixes = Get-HotFix |
+    Select-Object HotFixID, Description, InstalledBy, InstalledOn |
+    Sort-Object InstalledOn -Descending
+
+$hotfixes | Format-Table -AutoSize
+
+# Export CSV optionnel
+# $hotfixes | Export-Csv "C:\Temp\KBs_$(Get-Date -Format 'yyyyMMdd').csv" -NoTypeInformation -Encoding UTF8</pre>
+    </div>
+
+    <div class="pscard">
+      <div class="codehdr">
+        <div><div class="codetitle">✅ Vérifier une liste de KBs requis</div>
+          <div class="codedesc">Compare les KBs installés contre une liste obligatoire, rapport coloré</div></div>
+        <button class="copybtn" onclick="copyEl('ps2',this)">📋 Copier</button>
+      </div>
+      <pre class="codeblock" id="ps2"># ── Adapter la liste selon le Patch Tuesday du mois ──
+$KBsRequis = @(
+    "KB5034763",  # Windows 10 22H2
+    "KB5034766",  # Windows 11 23H2
+    "KB5034765",  # Windows Server 2022
+    "KB5034768"   # Windows Server 2019
+)
+
+Write-Host "=== Vérification KBs requis ===" -ForegroundColor Cyan
+Write-Host "Machine : $env:COMPUTERNAME  |  $(Get-Date -Format 'yyyy-MM-dd HH:mm')" -ForegroundColor Gray
+
+$res = foreach ($kb in $KBsRequis) {
+    $hf = Get-HotFix -Id $kb -ErrorAction SilentlyContinue
+    [PSCustomObject]@{
+        KB     = $kb
+        Statut = if ($hf) { "✅ INSTALLÉ" } else { "❌ MANQUANT" }
+        Date   = if ($hf) { $hf.InstalledOn } else { "—" }
+        Par    = if ($hf) { $hf.InstalledBy } else { "—" }
+    }
+}
+
+$res | Format-Table -AutoSize
+
+$manquants = $res | Where-Object Statut -like "*MANQUANT*"
+if ($manquants) {
+    Write-Host "⚠️  $($manquants.Count) KB(s) manquant(s) — patching requis !" -ForegroundColor Red
+} else {
+    Write-Host "✅ Tous les KBs sont à jour." -ForegroundColor Green
+}
+
+# $res | Export-Csv "C:\Temp\KBs_Audit.csv" -NoTypeInformation -Encoding UTF8</pre>
+    </div>
+
+    <div class="pscard">
+      <div class="codehdr">
+        <div><div class="codetitle">🔄 Mises à jour Windows en attente</div>
+          <div class="codedesc">Détecte les updates non installées via Windows Update Agent (pas de module tiers requis)</div></div>
+        <button class="copybtn" onclick="copyEl('ps3',this)">📋 Copier</button>
+      </div>
+      <pre class="codeblock" id="ps3"># Vérification via COM Windows Update Agent — fonctionne sans PSWindowsUpdate
+function Get-PendingWU {
+    param([string]$Computer = $env:COMPUTERNAME)
+
+    $sb = {
+        $session  = New-Object -ComObject Microsoft.Update.Session
+        $searcher = $session.CreateUpdateSearcher()
+        try {
+            $result = $searcher.Search("IsInstalled=0 AND Type='Software' AND IsHidden=0")
+            $result.Updates | Select-Object Title,
+                @{N='KB';E={ ($_.KBArticleIDs | ForEach-Object {"KB$_"}) -join ', ' }},
+                @{N='Severity';E={ $_.MsrcSeverity }},
+                @{N='Size_MB';E={ [math]::Round($_.MaxDownloadSize/1MB,1) }}
+        } catch {
+            Write-Warning "WUA inaccessible: $_"
+        }
+    }
+
+    if ($Computer -eq $env:COMPUTERNAME) {
+        $updates = & $sb
+    } else {
+        $updates = Invoke-Command -ComputerName $Computer -ScriptBlock $sb -ErrorAction Stop
+    }
+
+    if (!$updates) {
+        Write-Host "✅ $Computer — aucune mise à jour en attente" -ForegroundColor Green
+    } else {
+        Write-Host "⚠️  $Computer — $($updates.Count) update(s) en attente :" -ForegroundColor Yellow
+        $updates | Format-Table Title, KB, Severity, Size_MB -AutoSize
+    }
+}
+
+# Usage :
+Get-PendingWU                          # Local
+# Get-PendingWU -Computer "SERVEUR01"  # Distant</pre>
+    </div>
+
+    <div class="pscard">
+      <div class="codehdr">
+        <div><div class="codetitle">🏢 Audit MSP multi-clients — rapport CSV complet</div>
+          <div class="codedesc">Vérifie un set de KBs critiques sur toutes les machines de plusieurs clients, exporte un rapport</div></div>
+        <button class="copybtn" onclick="copyEl('ps4',this)">📋 Copier</button>
+      </div>
+      <pre class="codeblock" id="ps4"># ══════════════════════════════════════════════════════════════
+#  MSP Patch Audit — multi-clients
+#  Modifier $KBs et $Clients selon vos environnements
+# ══════════════════════════════════════════════════════════════
+
+$KBs = @(
+    "KB5034763",   # Win 10 22H2
+    "KB5034766",   # Win 11 23H2
+    "KB5034765",   # WinSrv 2022
+    "KB5034768"    # WinSrv 2019
+)
+
+$Clients = @(
+    @{ Nom="Client-A"; PCs=@("CA-PC01","CA-PC02","CA-SRV01") },
+    @{ Nom="Client-B"; PCs=@("CB-WS01","CB-WS02","CB-DC01")  }
+    # ── Ajouter d'autres clients ──
+)
+
+$Results  = [System.Collections.Generic.List[PSCustomObject]]::new()
+$DateAudit = Get-Date -Format "yyyy-MM-dd HH:mm"
+
+foreach ($client in $Clients) {
+    Write-Host "`n═══ Client : $($client.Nom) ═══" -ForegroundColor Cyan
+
+    foreach ($pc in $client.PCs) {
+        Write-Host "  → $pc" -NoNewline
+
+        try {
+            $hf = Invoke-Command -ComputerName $pc -ErrorAction Stop -ScriptBlock {
+                Get-HotFix | Select-Object HotFixID, InstalledOn
+            }
+            $os = Invoke-Command -ComputerName $pc -ScriptBlock {
+                (Get-CimInstance Win32_OperatingSystem).Caption
+            }
+
+            foreach ($kb in $KBs) {
+                $trouve = $hf | Where-Object HotFixID -eq $kb
+                $Results.Add([PSCustomObject]@{
+                    Date        = $DateAudit
+                    Client      = $client.Nom
+                    Machine     = $pc
+                    OS          = $os
+                    KB          = $kb
+                    Statut      = if ($trouve) { "INSTALLE" } else { "MANQUANT" }
+                    DateInstall = if ($trouve) { $trouve.InstalledOn } else { "" }
+                    Erreur      = ""
+                })
+            }
+            Write-Host " ✅" -ForegroundColor Green
+
+        } catch {
+            Write-Host " ❌  ($($_.Exception.Message))" -ForegroundColor Red
+            foreach ($kb in $KBs) {
+                $Results.Add([PSCustomObject]@{
+                    Date="$DateAudit"; Client=$client.Nom; Machine=$pc; OS="INACCESSIBLE"
+                    KB=$kb; Statut="INACCESSIBLE"; DateInstall=""; Erreur=$_.Exception.Message
+                })
+            }
+        }
+    }
+}
+
+# ── Résumé ──
+$manquants = $Results | Where-Object Statut -eq "MANQUANT"
+Write-Host "`n════ RÉSUMÉ ════" -ForegroundColor Cyan
+Write-Host "Vérifications : $($Results.Count)"
+Write-Host "Installés     : $(($Results|?{$_.Statut -eq 'INSTALLE'}).Count)" -ForegroundColor Green
+Write-Host "Manquants     : $($manquants.Count)"  -ForegroundColor $(if($manquants.Count){"Red"}else{"Green"})
+Write-Host "Inaccessibles : $(($Results|?{$_.Statut -eq 'INACCESSIBLE'}).Count)" -ForegroundColor Yellow
+
+if ($manquants) {
+    Write-Host "`nMachines prioritaires :" -ForegroundColor Red
+    $manquants | Group-Object Machine |
+        ForEach-Object { Write-Host "  $($_.Name) : $($_.Group.KB -join ', ')" -ForegroundColor Red }
+}
+
+# ── Export CSV ──
+$csv = "C:\Temp\MSP_PatchAudit_$(Get-Date -Format 'yyyyMMdd_HHmm').csv"
+$Results | Export-Csv $csv -NoTypeInformation -Encoding UTF8
+Write-Host "`n📄 Rapport : $csv" -ForegroundColor Cyan</pre>
+    </div>
+
+    <div class="pscard">
+      <div class="codehdr">
+        <div><div class="codetitle">📡 Forcer Windows Update + redémarrage si nécessaire</div>
+          <div class="codedesc">Déclenche un scan WU, télécharge et installe les mises à jour critiques (requiert PSWindowsUpdate)</div></div>
+        <button class="copybtn" onclick="copyEl('ps5',this)">📋 Copier</button>
+      </div>
+      <pre class="codeblock" id="ps5"># Nécessite le module PSWindowsUpdate (à installer une fois) :
+# Install-Module PSWindowsUpdate -Force -Scope CurrentUser
+
+# ── Installation sur une machine distante ──
+param(
+    [string[]]$Computers      = @($env:COMPUTERNAME),
+    [switch]  $AutoReboot     = $false,
+    [string]  $SeverityFilter = "Critical,Important"   # ou "" pour tout installer
+)
+
+foreach ($pc in $Computers) {
+    Write-Host "`n[$pc] Lancement Windows Update…" -ForegroundColor Cyan
+
+    $params = @{
+        ComputerName = $pc
+        AcceptAll    = $true
+        Install      = $true
+        Verbose      = $false
+    }
+    if ($SeverityFilter) {
+        $sevs = $SeverityFilter -split ','
+        $params.MicrosoftUpdate = $true
+    }
+    if ($AutoReboot) { $params.AutoReboot = $true }
+
+    try {
+        $updates = Get-WindowsUpdate @params
+        if (!$updates) {
+            Write-Host "  ✅ Aucune mise à jour à appliquer" -ForegroundColor Green
+        } else {
+            Write-Host "  ✅ $($updates.Count) mise(s) à jour installée(s)" -ForegroundColor Green
+            $updates | Select-Object KB, Title, Status | Format-Table -AutoSize
+        }
+    } catch {
+        Write-Host "  ❌ Erreur : $_" -ForegroundColor Red
+    }
+}</pre>
+    </div>
+
+  </div><!-- /psgrid -->
+</div><!-- /panel-ps -->
+
+</main>
+
+<!-- ═══ Modal ═══ -->
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modalhdr">
+      <h3 id="modalTitle">Détails</h3>
+      <button class="modalclose" onclick="closeModal()">✕</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════════════════════════
+const S = {
+  vulns:   [],          // parsed vulnerabilities
+  kbMap:   new Map(),   // KB → { kb, cves[], products Set, maxSev, hasExpl }
+  prodMap: new Map(),   // productId → name
+  month:   null,
+};
+
+// ══════════════════════════════════════════════════════════════════
+//  API
+// ══════════════════════════════════════════════════════════════════
+const MSRC = 'https://api.msrc.microsoft.com/cvrf/v2.0';
+
+async function apiFetch(url) {
+  const r = await fetch(url, { headers: { Accept: 'application/json' } });
+  if (!r.ok) throw new Error(`HTTP ${r.status} — ${url}`);
+  return r.json();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  PARSER
+// ══════════════════════════════════════════════════════════════════
+const SEV_VALS = new Set(['Critical','Important','Moderate','Low']);
+
+function parseCVRF(cvrf) {
+  // Product map
+  const pm = new Map();
+  (cvrf.ProductTree?.FullProductName || []).forEach(p => pm.set(String(p.ProductID), p.Value));
+
+  const vulns = (cvrf.Vulnerability || []).map(v => {
+    const threats = v.Threats || [];
+
+    // Severity — look for a threat whose description IS a known severity label
+    const sevT = threats.find(t => SEV_VALS.has(t.Description?.Value));
+    let severity = sevT?.Description?.Value || 'Unknown';
+    // Fallback from CVSS
+    if (severity === 'Unknown' && v.CVSSScoreSets?.[0]?.BaseScore) {
+      const s = v.CVSSScoreSets[0].BaseScore;
+      severity = s >= 9 ? 'Critical' : s >= 7 ? 'Important' : s >= 4 ? 'Moderate' : 'Low';
+    }
+
+    // Exploited
+    const exploited = threats.some(t => {
+      const val = (t.Description?.Value || '').toLowerCase();
+      return val === 'exploited:yes' || val.includes('exploitation detected');
+    });
+
+    // Publicly disclosed
+    const pubDisc = threats.some(t =>
+      (t.Description?.Value || '').toLowerCase().includes('publicly disclosed:yes')
+    );
+
+    // KBs from Vendor Fix remediations (Description.Value is pure digits)
+    const kbs = [];
+    (v.Remediations || []).forEach(r => {
+      const type = r.Type;
+      const isVendorFix = type === 2 || type === '2' ||
+        String(type).toLowerCase() === 'vendor fix';
+      if (isVendorFix) {
+        const val = (r.Description?.Value || '').trim();
+        if (/^\d{5,7}$/.test(val)) {
+          const kb = 'KB' + val;
+          if (!kbs.includes(kb)) kbs.push(kb);
+        }
+      }
+    });
+
+    // Also check URL field for KB numbers
+    (v.Remediations || []).forEach(r => {
+      const url = r.URL || '';
+      const m = url.match(/[?&]q=(KB\d+)/i);
+      if (m && !kbs.includes(m[1].toUpperCase())) kbs.push(m[1].toUpperCase());
+    });
+
+    // Affected products
+    const pids = new Set();
+    (v.ProductStatuses || []).forEach(ps => (ps.ProductID || []).forEach(id => pids.add(String(id))));
+    const products = [...pids].map(id => pm.get(id)).filter(Boolean);
+
+    return {
+      cveId: v.CVE,
+      title: v.Title?.Value || v.CVE || '',
+      severity,
+      exploited,
+      pubDisc,
+      kbs,
+      products,
+      cvss: v.CVSSScoreSets?.[0]?.BaseScore || null,
+      desc: (v.Notes || []).find(n => n.Type === 1 || n.Type === 'Description')?.Value || '',
+    };
+  });
+
+  return { vulns, pm };
+}
+
+function buildKBMap(vulns) {
+  const map = new Map();
+  vulns.forEach(v => {
+    v.kbs.forEach(kb => {
+      if (!map.has(kb)) map.set(kb, { kb, cves: [], products: new Set(), maxSev: 'Low', hasExpl: false });
+      const e = map.get(kb);
+      e.cves.push(v);
+      v.products.forEach(p => e.products.add(p));
+      if (sevOrd(v.severity) > sevOrd(e.maxSev)) e.maxSev = v.severity;
+      if (v.exploited) e.hasExpl = true;
+    });
+  });
+  return map;
+}
+
+const SEV_ORD = { Critical: 4, Important: 3, Moderate: 2, Low: 1 };
+const SEV_CLS = { Critical: 'crit', Important: 'imp', Moderate: 'mod', Low: 'low' };
+function sevOrd(s) { return SEV_ORD[s] || 0; }
+function bc(s) { return `b b-${SEV_CLS[s] || 'low'}`; }
+
+// ══════════════════════════════════════════════════════════════════
+//  TABS
+// ══════════════════════════════════════════════════════════════════
+document.querySelectorAll('.tab').forEach(btn => btn.addEventListener('click', () => {
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('panel-' + btn.dataset.tab).classList.add('active');
+}));
+
+// ══════════════════════════════════════════════════════════════════
+//  LOAD
+// ══════════════════════════════════════════════════════════════════
+async function loadData() {
+  const btn = document.getElementById('btnRefresh');
+  btn.textContent = '⟳ Chargement…'; btn.disabled = true;
+  clearError();
+
+  try {
+    const data = await apiFetch(`${MSRC}/updates`);
+    const updates = data.value || [];
+    if (!updates.length) throw new Error('Aucune mise à jour retournée');
+
+    // Populate selector
+    const sel = document.getElementById('selMonth');
+    sel.innerHTML = '';
+    updates.slice(0, 18).forEach(u => {
+      const o = document.createElement('option');
+      o.value = u.ID || u.Alias;
+      o.textContent = u.DocumentTitle?.Value || u.ID;
+      sel.appendChild(o);
+    });
+    sel.onchange = () => loadMonth(sel.value);
+
+    await loadMonth(sel.value);
+    document.getElementById('lastUpdate').textContent =
+      'Mis à jour : ' + new Date().toLocaleString('fr-FR');
+
+  } catch (e) {
+    showError('Erreur API MSRC : ' + e.message +
+      '. Vérifiez votre connexion internet et les paramètres CORS de votre navigateur.');
+  } finally {
+    btn.textContent = '⟳ Actualiser'; btn.disabled = false;
+  }
+}
+
+async function loadMonth(monthId) {
+  if (!monthId) return;
+  S.month = monthId;
+  setLoading();
+
+  try {
+    const cvrf = await apiFetch(`${MSRC}/cvrf/${monthId}`);
+    const { vulns, pm } = parseCVRF(cvrf);
+    S.vulns   = vulns;
+    S.prodMap = pm;
+    S.kbMap   = buildKBMap(vulns);
+
+    renderDash(); renderKBs(); renderCVEs(); renderMap();
+    buildScript();
+  } catch (e) {
+    showError('Erreur chargement ' + monthId + ' : ' + e.message);
+  }
+}
+
+function setLoading() {
+  ['kbBox','cveBox','mapContent','dbContent'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.innerHTML = '<div class="loading"><div class="spin"></div><br>Chargement…</div>';
+  });
+  ['sKBs','sCVEs','sCrit','sExpl'].forEach(id => document.getElementById(id).textContent = '—');
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════════════════════════
+function renderDash() {
+  const { vulns, kbMap } = S;
+  document.getElementById('sKBs').textContent  = kbMap.size;
+  document.getElementById('sCVEs').textContent  = vulns.length;
+  document.getElementById('sCrit').textContent  = vulns.filter(v => v.severity === 'Critical').length;
+  document.getElementById('sExpl').textContent  = vulns.filter(v => v.exploited).length;
+
+  const exploited = vulns.filter(v => v.exploited);
+  const critical  = vulns.filter(v => v.severity === 'Critical').slice(0, 8);
+
+  const makeTable = (rows, emptyMsg) => rows.length === 0
+    ? `<tr><td colspan="3" style="text-align:center;color:var(--green);padding:12px">✅ ${emptyMsg}</td></tr>`
+    : rows.map(v => `<tr onclick="showCVE('${v.cveId}')">
+        <td><span class="cveid">${v.cveId}</span></td>
+        <td style="font-size:.8rem;max-width:220px">${v.title.substring(0,65)}${v.title.length>65?'…':''}</td>
+        <td>${v.kbs.slice(0,2).map(k=>`<span class="b b-kb">${k}</span>`).join(' ')}</td>
+       </tr>`).join('');
+
+  document.getElementById('dbContent').innerHTML = `
+    <div class="dbgrid">
+      <div class="dbsec">
+        <h3 style="color:var(--red)">🚨 CVEs exploitées (${exploited.length})</h3>
+        <div class="tbox"><table>
+          <thead><tr><th>CVE</th><th>Titre</th><th>Correctifs KB</th></tr></thead>
+          <tbody>${makeTable(exploited.slice(0,10), 'Aucune CVE exploitée ce mois')}</tbody>
+        </table></div>
+      </div>
+      <div class="dbsec">
+        <h3 style="color:var(--red)">🔴 CVEs critiques (top 8)</h3>
+        <div class="tbox"><table>
+          <thead><tr><th>CVE</th><th>Titre</th><th>Correctifs KB</th></tr></thead>
+          <tbody>${makeTable(critical, 'Aucune CVE critique ce mois')}</tbody>
+        </table></div>
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  KBs TABLE
+// ══════════════════════════════════════════════════════════════════
+function renderKBs() {
+  const search = (document.getElementById('kbSearch')?.value || '').toLowerCase();
+  const sevF   = document.getElementById('kbSev')?.value || '';
+
+  let entries = [...S.kbMap.values()];
+
+  if (search) entries = entries.filter(e =>
+    e.kb.toLowerCase().includes(search) ||
+    e.cves.some(c => c.cveId.toLowerCase().includes(search) || c.title.toLowerCase().includes(search))
+  );
+  if (sevF) entries = entries.filter(e => e.maxSev === sevF);
+
+  entries.sort((a, b) => {
+    if (b.hasExpl !== a.hasExpl) return b.hasExpl ? 1 : -1;
+    return sevOrd(b.maxSev) - sevOrd(a.maxSev);
+  });
+
+  if (!entries.length) {
+    document.getElementById('kbBox').innerHTML =
+      '<div style="padding:20px;text-align:center;color:var(--muted)">Aucun KB trouvé</div>';
+    return;
+  }
+
+  const rows = entries.map(e => {
+    const prods = [...e.products].slice(0, 2).map(p =>
+      `<span class="tag">${p.replace('Windows ','W').replace('Server ','Srv ')}</span>`).join('');
+    const more = e.products.size > 2 ? `<span class="tag">+${e.products.size-2}</span>` : '';
+    return `<tr onclick="showKB('${e.kb}')">
+      <td>
+        <a class="kblink" href="https://support.microsoft.com/search/results?query=${e.kb}"
+           target="_blank" onclick="event.stopPropagation()">${e.kb}</a>
+        ${e.hasExpl ? '<span class="b b-exp" style="margin-left:6px">🚨 EXPLOIT</span>' : ''}
+      </td>
+      <td><span class="${bc(e.maxSev)}">${e.maxSev}</span></td>
+      <td><strong>${e.cves.length}</strong></td>
+      <td>${e.cves.filter(c=>c.exploited).length||'<span style="color:var(--green)">—</span>'}</td>
+      <td><div class="tags">${prods}${more}</div></td>
+      <td>
+        <button class="sec sm" onclick="event.stopPropagation();quickKB('${e.kb}')">💻 PS</button>
+        <a href="https://catalog.update.microsoft.com/Search.aspx?q=${e.kb}" target="_blank"
+           onclick="event.stopPropagation()" style="margin-left:4px;font-size:.72rem;color:var(--blue);text-decoration:none">📦</a>
+      </td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('kbBox').innerHTML = `<table>
+    <thead><tr><th>KB Article</th><th>Sévérité max</th><th>CVEs</th><th>Exploitées</th><th>Produits</th><th>Actions</th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  CVEs TABLE
+// ══════════════════════════════════════════════════════════════════
+function renderCVEs() {
+  const search = (document.getElementById('cveSearch')?.value || '').toLowerCase();
+  const sevF   = document.getElementById('cveSev')?.value || '';
+  const expF   = document.getElementById('cveExp')?.value || '';
+
+  let vulns = [...S.vulns];
+
+  if (search) vulns = vulns.filter(v =>
+    v.cveId.toLowerCase().includes(search) ||
+    v.title.toLowerCase().includes(search) ||
+    v.kbs.some(k => k.toLowerCase().includes(search))
+  );
+  if (sevF) vulns = vulns.filter(v => v.severity === sevF);
+  if (expF === 'yes') vulns = vulns.filter(v => v.exploited);
+  if (expF === 'pub') vulns = vulns.filter(v => v.pubDisc);
+
+  vulns.sort((a, b) => {
+    if (b.exploited !== a.exploited) return b.exploited ? 1 : -1;
+    return sevOrd(b.severity) - sevOrd(a.severity);
+  });
+
+  if (!vulns.length) {
+    document.getElementById('cveBox').innerHTML =
+      '<div style="padding:20px;text-align:center;color:var(--muted)">Aucun CVE trouvé</div>';
+    return;
+  }
+
+  const cvssColor = s => s >= 9 ? 'var(--red)' : s >= 7 ? 'var(--orange)' : 'var(--text)';
+
+  const rows = vulns.map(v => {
+    const kbHtml = v.kbs.slice(0,3).map(k =>
+      `<a class="kblink" style="font-size:.75rem" href="https://support.microsoft.com/search/results?query=${k}"
+         target="_blank" onclick="event.stopPropagation()">${k}</a>`).join(' ') +
+      (v.kbs.length>3 ? `<span class="tag">+${v.kbs.length-3}</span>` : '');
+
+    const flags = [
+      v.exploited ? '<span class="b b-exp">🚨 EXPLOIT</span>' : '',
+      v.pubDisc   ? '<span class="b b-pub">PUBLIC</span>'     : '',
+    ].filter(Boolean).join(' ') || '<span style="color:var(--muted);font-size:.75rem">—</span>';
+
+    return `<tr onclick="showCVE('${v.cveId}')">
+      <td><span class="cveid">${v.cveId}</span></td>
+      <td style="max-width:260px;font-size:.82rem">${v.title}</td>
+      <td><span class="${bc(v.severity)}">${v.severity}</span></td>
+      <td>${v.cvss ? `<strong style="color:${cvssColor(v.cvss)}">${v.cvss}</strong>` : '—'}</td>
+      <td><div class="tags">${kbHtml}</div></td>
+      <td>${flags}</td>
+      <td><button class="sec sm" onclick="event.stopPropagation();quickCVE('${v.cveId}')">💻 PS</button></td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('cveBox').innerHTML = `<table>
+    <thead><tr><th>CVE ID</th><th>Titre</th><th>Sévérité</th><th>CVSS</th><th>KBs correctifs</th><th>Statut</th><th></th></tr></thead>
+    <tbody>${rows}</tbody></table>`;
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MAPPING
+// ══════════════════════════════════════════════════════════════════
+function renderMap() {
+  const entries = [...S.kbMap.values()].sort((a,b) => {
+    if (b.hasExpl !== a.hasExpl) return b.hasExpl ? 1 : -1;
+    return sevOrd(b.maxSev) - sevOrd(a.maxSev);
+  });
+
+  if (!entries.length) {
+    document.getElementById('mapContent').innerHTML =
+      '<div class="loading">Aucune donnée</div>';
+    return;
+  }
+
+  const items = entries.map(e => {
+    const cveBadges = e.cves.map(c =>
+      `<span class="${bc(c.severity)}" style="cursor:pointer;font-size:.68rem"
+             onclick="showCVE('${c.cveId}')" title="${c.title.replace(/"/g,"'")}">
+        ${c.cveId}${c.exploited?' 🚨':''}
+       </span>`).join(' ');
+
+    const prods = [...e.products].slice(0,3).join(' · ');
+
+    return `<div class="mapitem" data-search="${e.kb} ${e.cves.map(c=>c.cveId).join(' ')}">
+      <div style="min-width:130px">
+        <div class="mapkb">${e.kb}</div>
+        <span class="${bc(e.maxSev)}" style="font-size:.65rem">${e.maxSev}</span>
+        ${e.hasExpl ? '<span class="b b-exp" style="font-size:.62rem;margin-left:4px">EXPLOIT</span>' : ''}
+        <div style="font-size:.68rem;color:var(--muted);margin-top:4px;max-width:130px">${prods}</div>
+      </div>
+      <div style="flex:1">
+        <div style="font-size:.72rem;color:var(--muted);margin-bottom:6px">${e.cves.length} CVE(s) corrigé(s) :</div>
+        <div class="tags">${cveBadges}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
+        <button class="sec sm" onclick="quickKB('${e.kb}')">💻 PS Script</button>
+        <a href="https://catalog.update.microsoft.com/Search.aspx?q=${e.kb}" target="_blank"
+           style="font-size:.72rem;color:var(--blue);text-decoration:none">📦 Catalog</a>
+      </div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('mapContent').innerHTML =
+    `<div id="mapItems">${items}</div>`;
+}
+
+function filterMap(q) {
+  q = q.toLowerCase();
+  document.querySelectorAll('#mapItems .mapitem').forEach(el => {
+    el.style.display = el.dataset.search.toLowerCase().includes(q) ? '' : 'none';
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  MODALS
+// ══════════════════════════════════════════════════════════════════
+function showCVE(id) {
+  const v = S.vulns.find(x => x.cveId === id); if (!v) return;
+
+  const kbLinks = v.kbs.map(k =>
+    `<a class="kblink" href="https://support.microsoft.com/search/results?query=${k}" target="_blank">${k}</a>`
+  ).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
+
+  const prods = v.products.slice(0,12).join(', ') +
+    (v.products.length > 12 ? ` … +${v.products.length-12}` : '');
+
+  document.getElementById('modalTitle').innerHTML =
+    `<span class="cveid">${v.cveId}</span> &nbsp;<span class="${bc(v.severity)}">${v.severity}</span>`;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div class="msec"><h4>Titre</h4><p>${v.title}</p></div>
+    ${v.desc ? `<div class="msec"><h4>Description</h4>
+      <p style="font-size:.82rem;color:var(--muted)">${v.desc.substring(0,500)}${v.desc.length>500?'…':''}</p>
+    </div>` : ''}
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+      <div class="msec"><h4>CVSS</h4><strong style="font-size:1.4rem">${v.cvss || '—'}</strong></div>
+      <div class="msec"><h4>Exploitée</h4>${v.exploited ?
+        '<span class="b b-exp">🚨 OUI</span>' : '<span style="color:var(--green)">Non</span>'}</div>
+      <div class="msec"><h4>Divulguée</h4>${v.pubDisc ?
+        '<span style="color:var(--yellow)">⚠️ Oui</span>' : '<span style="color:var(--green)">Non</span>'}</div>
+    </div>
+    <div class="msec"><h4>KBs correctifs (${v.kbs.length})</h4><p>${kbLinks}</p></div>
+    <div class="msec"><h4>Produits affectés (${v.products.length})</h4>
+      <p style="font-size:.8rem;color:var(--muted)">${prods || '—'}</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <a href="https://msrc.microsoft.com/update-guide/vulnerability/${v.cveId}" target="_blank">
+        <button>🔗 MSRC Advisory</button></a>
+      <a href="https://nvd.nist.gov/vuln/detail/${v.cveId}" target="_blank">
+        <button class="sec">🔗 NVD</button></a>
+      <button class="sec" onclick="closeModal();quickCVE('${v.cveId}')">💻 Générer PS Script</button>
+    </div>`;
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+function showKB(kb) {
+  const e = S.kbMap.get(kb); if (!e) return;
+  const crit = e.cves.filter(c => c.severity === 'Critical').length;
+  const expl = e.cves.filter(c => c.exploited).length;
+
+  const cveBadges = e.cves.map(c =>
+    `<span class="${bc(c.severity)}" style="cursor:pointer;font-size:.72rem"
+           onclick="closeModal();showCVE('${c.cveId}')"
+           title="${c.title.replace(/"/g,"'")}">
+      ${c.cveId}${c.exploited?' 🚨':''}
+     </span>`).join(' ');
+
+  document.getElementById('modalTitle').innerHTML =
+    `<span class="kblink">${kb}</span> &nbsp;<span class="${bc(e.maxSev)}">${e.maxSev}</span>`;
+
+  document.getElementById('modalBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
+      <div class="msec"><h4>CVEs couverts</h4><strong style="font-size:1.6rem;color:var(--blue)">${e.cves.length}</strong></div>
+      <div class="msec"><h4>Critiques</h4><strong style="font-size:1.6rem;color:var(--red)">${crit}</strong></div>
+      <div class="msec"><h4>Exploitées</h4><strong style="font-size:1.6rem;color:var(--orange)">${expl}</strong></div>
+    </div>
+    <div class="msec"><h4>CVEs corrigés par ce KB</h4><div class="tags" style="margin-top:6px">${cveBadges}</div></div>
+    <div class="msec"><h4>Produits (${e.products.size})</h4>
+      <p style="font-size:.8rem;color:var(--muted)">${[...e.products].slice(0,15).join(', ')}${e.products.size>15?` +${e.products.size-15}`:''}…</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <a href="https://support.microsoft.com/search/results?query=${kb}" target="_blank">
+        <button>🔗 Support Microsoft</button></a>
+      <a href="https://catalog.update.microsoft.com/Search.aspx?q=${kb}" target="_blank">
+        <button class="sec">📦 Update Catalog</button></a>
+      <button class="sec" onclick="closeModal();quickKB('${kb}')">💻 Générer PS Script</button>
+    </div>`;
+
+  document.getElementById('overlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('overlay'))
+    document.getElementById('overlay').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+// ══════════════════════════════════════════════════════════════════
+//  POWERSHELL GENERATOR
+// ══════════════════════════════════════════════════════════════════
+function onGenTypeChange() {
+  const t = document.getElementById('genType').value;
+  const isRemote = t.includes('remote') || t === 'audit';
+  const isCVE    = t.includes('cve') || t === 'audit';
+
+  document.getElementById('grpKB').style.display      = (!isCVE || t === 'audit') ? '' : 'none';
+  document.getElementById('grpCVE').style.display     = isCVE ? '' : 'none';
+  document.getElementById('grpComputers').style.display = isRemote ? '' : 'none';
+}
+
+function buildScript() {
+  const type  = document.getElementById('genType').value;
+  const kb    = (document.getElementById('genKB').value  || '').trim() || 'KB0000000';
+  const cve   = (document.getElementById('genCVE').value || '').trim() || 'CVE-2024-00000';
+  const pcsRaw = document.getElementById('genPCs').value || '';
+  const csv   = document.getElementById('genCSV').value === 'yes';
+  const pcs   = pcsRaw.split(/[\n,]/).map(s => s.trim()).filter(Boolean);
+
+  let title, desc, script;
+
+  switch (type) {
+    case 'kb-local':
+      title='🔍 Vérification KB — Machine locale';
+      desc='Vérifie si un KB est installé sur la machine locale';
+      script=psKBLocal(kb,csv); break;
+    case 'kb-remote':
+      title='🌐 Vérification KB — Machines distantes';
+      desc='Vérifie via WinRM sur plusieurs machines (MSP)';
+      script=psKBRemote(kb,pcs,csv); break;
+    case 'cve-local':
+      title='🔍 Vérification CVE — Machine locale';
+      desc='Vérifie si la machine est vulnérable (KB correctif absent)';
+      script=psCVELocal(cve,csv); break;
+    case 'cve-remote':
+      title='🌐 Vérification CVE — Machines distantes';
+      desc='Vérifie la vulnérabilité CVE sur plusieurs machines clientes';
+      script=psCVERemote(cve,pcs,csv); break;
+    case 'audit':
+      title='📋 Audit complet du mois — Multi-machines';
+      desc='Vérifie tous les KBs critiques du mois chargé dans le dashboard';
+      script=psAudit(pcs,csv); break;
+  }
+
+  document.getElementById('genTitle').textContent = title;
+  document.getElementById('genDesc').textContent  = desc;
+  document.getElementById('genOut').textContent   = script;
+}
+
+// ── Templates PS ─────────────────────────────────────────────────
+
+const today = () => new Date().toLocaleDateString('fr-FR');
+const csvBlock = (path) => `
+# Export CSV
+$result | Export-Csv -Path "${path}" -NoTypeInformation -Encoding UTF8
+Write-Host "\\n📄 Export : $csvPath" -ForegroundColor Cyan`;
+
+function psKBLocal(kb, csv) {
+return `# ════════════════════════════════════
+#  Vérification KB sur machine locale
+#  KB : ${kb}   |   Généré : ${today()}
+# ════════════════════════════════════
+
+$KB = "${kb}"
+Write-Host "Vérification $KB sur $env:COMPUTERNAME…" -ForegroundColor Cyan
+
+$hf = Get-HotFix -Id $KB -ErrorAction SilentlyContinue
+
+if ($hf) {
+    Write-Host "✅ $KB est INSTALLÉ" -ForegroundColor Green
+    Write-Host "   Date  : $($hf.InstalledOn)"
+    Write-Host "   Par   : $($hf.InstalledBy)"
+} else {
+    Write-Host "❌ $KB N'EST PAS installé — machine potentiellement vulnérable !" -ForegroundColor Red
+}${csv ? `
+
+$result = [PSCustomObject]@{
+    Date     = Get-Date -Format "yyyy-MM-dd HH:mm"
+    Machine  = $env:COMPUTERNAME
+    KB       = $KB
+    Statut   = if ($hf) { "INSTALLE" } else { "MANQUANT" }
+    DateInst = if ($hf) { $hf.InstalledOn } else { "N/A" }
+}
+$csvPath = "C:\\Temp\\KB_${kb}_$(Get-Date -Format 'yyyyMMdd_HHmm').csv"${csvBlock('$csvPath')}` : ''}`;
+}
+
+function psKBRemote(kb, pcs, csv) {
+  const list = pcs.length ? pcs.map(p=>`    "${p}"`).join(',\n') : '    "PC01",\n    "PC02",\n    "SERVER01"';
+return `# ════════════════════════════════════════════════
+#  Vérification KB sur machines distantes (MSP)
+#  KB : ${kb}   |   Généré : ${today()}
+# ════════════════════════════════════════════════
+
+$KB        = "${kb}"
+$Computers = @(
+${list}
+)
+
+$Results = [System.Collections.Generic.List[PSCustomObject]]::new()
+Write-Host "=== Vérification $KB ===" -ForegroundColor Cyan
+
+foreach ($pc in $Computers) {
+    Write-Host "  $pc… " -NoNewline
+    try {
+        $r = Invoke-Command -ComputerName $pc -ErrorAction Stop -ScriptBlock {
+            param($k)
+            $hf = Get-HotFix -Id $k -ErrorAction SilentlyContinue
+            @{ Ok=$($null -ne $hf); Date=$hf.InstalledOn; By=$hf.InstalledBy }
+        } -ArgumentList $KB
+
+        if ($r.Ok) { Write-Host "✅ INSTALLÉ ($($r.Date))" -ForegroundColor Green }
+        else        { Write-Host "❌ MANQUANT"              -ForegroundColor Red   }
+
+        $Results.Add([PSCustomObject]@{
+            Machine=$pc; KB=$KB
+            Statut = if ($r.Ok) {"INSTALLE"} else {"MANQUANT"}
+            Date   = $r.Date; Par=$r.By; Erreur=""
+        })
+    } catch {
+        Write-Host "⚠️  INACCESSIBLE" -ForegroundColor Yellow
+        $Results.Add([PSCustomObject]@{
+            Machine=$pc; KB=$KB; Statut="INACCESSIBLE"
+            Date=""; Par=""; Erreur=$_.Exception.Message
+        })
+    }
+}
+
+# Résumé
+$miss = ($Results | Where-Object Statut -eq "MANQUANT").Count
+Write-Host "\n=== RÉSUMÉ ===" -ForegroundColor Cyan
+Write-Host "Installé  : $(($Results|?{$_.Statut -eq 'INSTALLE'}).Count)"    -ForegroundColor Green
+Write-Host "Manquant  : $miss" -ForegroundColor $(if($miss){"Red"}else{"Green"})
+Write-Host "Inaccess. : $(($Results|?{$_.Statut -eq 'INACCESSIBLE'}).Count)" -ForegroundColor Yellow
+${csv ? `
+$csvPath = "C:\\Temp\\KB_${kb}_$(Get-Date -Format 'yyyyMMdd_HHmm').csv"
+$Results | Export-Csv $csvPath -NoTypeInformation -Encoding UTF8
+Write-Host "📄 Export : $csvPath" -ForegroundColor Cyan` : ''}`;
+}
+
+function psCVELocal(cveId, csv) {
+  const v    = S.vulns.find(x => x.cveId === cveId);
+  const kbs  = v ? v.kbs : ['KB0000000'];
+  const sev  = v?.severity || 'Unknown';
+  const title = (v?.title || cveId).replace(/"/g,"'");
+  const list = kbs.map(k=>`    "${k}"`).join(',\n');
+return `# ════════════════════════════════════════════════
+#  Vérification vulnérabilité ${cveId}
+#  Titre    : ${title}
+#  Sévérité : ${sev}
+#  Correctif: ${kbs.join(', ')}
+#  Généré   : ${today()}
+# ════════════════════════════════════════════════
+
+$CVE          = "${cveId}"
+$Titre        = "${title}"
+$CorrectifKBs = @(
+${list}
+)
+
+Write-Host "=== Vérification $CVE ===" -ForegroundColor Cyan
+Write-Host "Titre    : $Titre"         -ForegroundColor Gray
+Write-Host "Sévérité : ${sev}"         -ForegroundColor ${sev==='Critical'?'Red':sev==='Important'?'Yellow':'White'}
+Write-Host "Machine  : $env:COMPUTERNAME"
+
+$vulnerable = $true; $kbFound = $null
+
+foreach ($kb in $CorrectifKBs) {
+    $hf = Get-HotFix -Id $kb -ErrorAction SilentlyContinue
+    if ($hf) { $vulnerable = $false; $kbFound = $kb; break }
+}
+
+if ($vulnerable) {
+    Write-Host "\n❌ MACHINE VULNÉRABLE à $CVE !" -ForegroundColor Red
+    Write-Host "   KBs correctifs non installés :" -ForegroundColor Yellow
+    $CorrectifKBs | ForEach-Object { Write-Host "   — $_" -ForegroundColor Yellow }
+    Write-Host "\n   → Appliquer via Windows Update ou WSUS dès que possible." -ForegroundColor White
+} else {
+    Write-Host "\n✅ Machine PROTÉGÉE contre $CVE (correctif : $kbFound)" -ForegroundColor Green
+}
+${csv ? `
+$result = [PSCustomObject]@{
+    Date       = Get-Date -Format "yyyy-MM-dd HH:mm"
+    Machine    = $env:COMPUTERNAME
+    CVE        = $CVE
+    Vulnerable = $vulnerable
+    KBInstalle = if ($kbFound) {$kbFound} else {"AUCUN"}
+}
+$csvPath = "C:\\Temp\\CVE_${cveId}_$(Get-Date -Format 'yyyyMMdd_HHmm').csv"
+$result | Export-Csv $csvPath -NoTypeInformation -Encoding UTF8
+Write-Host "📄 Export : $csvPath" -ForegroundColor Cyan` : ''}`;
+}
+
+function psCVERemote(cveId, pcs, csv) {
+  const v    = S.vulns.find(x => x.cveId === cveId);
+  const kbs  = v ? v.kbs : ['KB0000000'];
+  const sev  = v?.severity || 'Unknown';
+  const pcList = pcs.length ? pcs.map(p=>`    "${p}"`).join(',\n') : '    "PC01",\n    "PC02"';
+  const kbList = kbs.map(k=>`    "${k}"`).join(',\n');
+return `# ════════════════════════════════════════════════════
+#  Vérification ${cveId} — Multi-machines (MSP)
+#  Sévérité : ${sev}   |   Correctifs : ${kbs.join(', ')}
+#  Généré   : ${today()}
+# ════════════════════════════════════════════════════
+
+$CVE          = "${cveId}"
+$CorrectifKBs = @(
+${kbList}
+)
+$Computers = @(
+${pcList}
+)
+
+$Results = [System.Collections.Generic.List[PSCustomObject]]::new()
+Write-Host "=== Vérification $CVE ===" -ForegroundColor Cyan
+
+foreach ($pc in $Computers) {
+    Write-Host "  $pc… " -NoNewline
+    try {
+        $r = Invoke-Command -ComputerName $pc -ErrorAction Stop -ScriptBlock {
+            param($kbs)
+            $vuln = $true; $found = $null
+            foreach ($k in $kbs) {
+                $hf = Get-HotFix -Id $k -ErrorAction SilentlyContinue
+                if ($hf) { $vuln = $false; $found = $k; break }
+            }
+            @{ Vuln=$vuln; KB=$found }
+        } -ArgumentList (,$CorrectifKBs)
+
+        if ($r.Vuln) { Write-Host "❌ VULNÉRABLE"        -ForegroundColor Red   }
+        else         { Write-Host "✅ Protégé ($($r.KB))" -ForegroundColor Green }
+
+        $Results.Add([PSCustomObject]@{
+            Machine=$pc; CVE=$CVE
+            Vulnerable=$r.Vuln; KBInstalle=$r.KB; Statut="OK"
+        })
+    } catch {
+        Write-Host "⚠️  INACCESSIBLE" -ForegroundColor Yellow
+        $Results.Add([PSCustomObject]@{
+            Machine=$pc; CVE=$CVE; Vulnerable="INCONNU"
+            KBInstalle=""; Statut="INACCESSIBLE: $_"
+        })
+    }
+}
+
+$vuln = ($Results | Where-Object Vulnerable -eq $true).Count
+Write-Host "\n=== RÉSUMÉ $CVE ===" -ForegroundColor Cyan
+Write-Host "Vulnérables  : $vuln" -ForegroundColor $(if($vuln){"Red"}else{"Green"})
+Write-Host "Protégées    : $(($Results|?{$_.Vulnerable -eq $false}).Count)" -ForegroundColor Green
+Write-Host "Inaccessibles: $(($Results|?{$_.Statut -like 'INACC*'}).Count)" -ForegroundColor Yellow
+${csv ? `
+$csvPath = "C:\\Temp\\CVE_${cveId}_$(Get-Date -Format 'yyyyMMdd_HHmm').csv"
+$Results | Export-Csv $csvPath -NoTypeInformation -Encoding UTF8
+Write-Host "📄 Export : $csvPath" -ForegroundColor Cyan` : ''}`;
+}
+
+function psAudit(pcs, csv) {
+  // Pick critical/exploited KBs from loaded data
+  const kbs = [...S.kbMap.values()]
+    .filter(e => e.maxSev === 'Critical' || e.hasExpl)
+    .map(e => e.kb).slice(0, 12);
+  const kbList = kbs.length
+    ? kbs.map(k => `    "${k}"`).join(',\n')
+    : '    "KB0000001",   # ← Remplacer par les KBs critiques du mois';
+  const pcList = pcs.length
+    ? pcs.map(p => `    "${p}"`).join(',\n')
+    : '    "PC01",\n    "PC02",\n    "SERVER01"';
+  const month = document.getElementById('selMonth')?.selectedOptions?.[0]?.text || 'Mois en cours';
+return `# ══════════════════════════════════════════════════════
+#  Audit patchs critiques — ${month}
+#  Source : MS Patch & CVE Dashboard
+#  Généré : ${today()}
+# ══════════════════════════════════════════════════════
+
+$KBsCritiques = @(
+${kbList}
+)
+
+$Computers = @(
+${pcList}
+)
+
+$Results   = [System.Collections.Generic.List[PSCustomObject]]::new()
+$DateAudit = Get-Date -Format "yyyy-MM-dd HH:mm"
+
+Write-Host "══════════════════════════════════" -ForegroundColor Cyan
+Write-Host "  AUDIT — ${month}" -ForegroundColor Cyan
+Write-Host "  $DateAudit" -ForegroundColor Gray
+Write-Host "══════════════════════════════════" -ForegroundColor Cyan
+
+foreach ($pc in $Computers) {
+    Write-Host "\n[$pc]" -ForegroundColor White
+    try {
+        $hf = Invoke-Command -ComputerName $pc -ErrorAction Stop -ScriptBlock {
+            Get-HotFix | Select-Object HotFixID, InstalledOn
+        }
+        $os = Invoke-Command -ComputerName $pc -ScriptBlock {
+            (Get-CimInstance Win32_OperatingSystem).Caption
+        }
+
+        foreach ($kb in $KBsCritiques) {
+            $t = $hf | Where-Object HotFixID -eq $kb
+            $s = if ($t) {"INSTALLE"} else {"MANQUANT"}
+            $c = if ($t) {"Green"}    else {"Red"}
+            $i = if ($t) {"✅"}       else {"❌"}
+            Write-Host ("  {0} {1} — {2}{3}" -f $i, $kb, $s, $(if($t){" ($($t.InstalledOn))"}else{""})) -ForegroundColor $c
+            $Results.Add([PSCustomObject]@{
+                Date=$DateAudit; Machine=$pc; OS=$os; KB=$kb
+                Statut=$s; DateInstall=if($t){$t.InstalledOn}else{""}; Erreur=""
+            })
+        }
+    } catch {
+        Write-Host "  ⚠️  INACCESSIBLE : $_" -ForegroundColor Yellow
+        foreach ($kb in $KBsCritiques) {
+            $Results.Add([PSCustomObject]@{
+                Date=$DateAudit; Machine=$pc; OS="INACCESSIBLE"; KB=$kb
+                Statut="INACCESSIBLE"; DateInstall=""; Erreur=$_.Exception.Message
+            })
+        }
+    }
+}
+
+# ── Résumé global ──
+$miss = $Results | Where-Object Statut -eq "MANQUANT"
+Write-Host "\n══════════════════════════════════" -ForegroundColor Cyan
+Write-Host "  RÉSUMÉ GLOBAL" -ForegroundColor Cyan
+Write-Host "══════════════════════════════════" -ForegroundColor Cyan
+Write-Host "Machines    : $($Computers.Count)"
+Write-Host "Installés   : $(($Results|?{$_.Statut -eq 'INSTALLE'}).Count)"    -ForegroundColor Green
+Write-Host "Manquants   : $($miss.Count)"                                       -ForegroundColor $(if($miss.Count){"Red"}else{"Green"})
+Write-Host "Inaccessible: $(($Results|?{$_.Statut -eq 'INACCESSIBLE'}).Count)" -ForegroundColor Yellow
+
+if ($miss) {
+    Write-Host "\nMachines à patcher en priorité :" -ForegroundColor Red
+    $miss | Group-Object Machine |
+        ForEach-Object { Write-Host "  $($_.Name) : $($_.Group.KB -join ', ')" -ForegroundColor Red }
+}
+${csv ? `
+$csvPath = "C:\\Temp\\Audit_$(Get-Date -Format 'yyyyMMdd_HHmm').csv"
+$Results | Export-Csv $csvPath -NoTypeInformation -Encoding UTF8
+Write-Host "\n📄 Rapport : $csvPath" -ForegroundColor Cyan` : ''}`;
+}
+
+// Quick-jump from table buttons
+function quickKB(kb) {
+  document.querySelector('[data-tab="ps"]').click();
+  document.getElementById('genType').value = 'kb-local';
+  document.getElementById('genKB').value   = kb;
+  onGenTypeChange(); buildScript();
+  window.scrollTo(0, 0);
+}
+function quickCVE(cveId) {
+  document.querySelector('[data-tab="ps"]').click();
+  document.getElementById('genType').value = 'cve-local';
+  document.getElementById('genCVE').value  = cveId;
+  onGenTypeChange(); buildScript();
+  window.scrollTo(0, 0);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  COPY
+// ══════════════════════════════════════════════════════════════════
+function copyEl(id, btn) {
+  const text = document.getElementById(id).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const b = typeof btn === 'string' ? document.getElementById(btn) : btn;
+    const orig = b.textContent;
+    b.textContent = '✅ Copié !'; b.classList.add('ok');
+    setTimeout(() => { b.textContent = orig; b.classList.remove('ok'); }, 2000);
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  CSV EXPORTS
+// ══════════════════════════════════════════════════════════════════
+function exportCSV(type) {
+  let content, filename;
+  if (type === 'kb') {
+    const rows = [...S.kbMap.values()].map(e =>
+      `${e.kb},${e.maxSev},${e.cves.length},${e.cves.filter(c=>c.exploited).length},"${[...e.products].slice(0,3).join('; ')}"`
+    );
+    content  = 'KB,Severite_Max,Nb_CVEs,CVEs_Exploitees,Produits\n' + rows.join('\n');
+    filename = `KBs_${S.month}.csv`;
+  } else {
+    const rows = S.vulns.map(v =>
+      `${v.cveId},"${v.title.replace(/"/g,"'")}",${v.severity},${v.cvss||''},${v.exploited?'Oui':'Non'},"${v.kbs.join('; ')}"`
+    );
+    content  = 'CVE_ID,Titre,Severite,CVSS,Exploitee,KBs_Correctifs\n' + rows.join('\n');
+    filename = `CVEs_${S.month}.csv`;
+  }
+  const a = Object.assign(document.createElement('a'), {
+    href: URL.createObjectURL(new Blob(['﻿' + content], {type:'text/csv;charset=utf-8;'})),
+    download: filename
+  });
+  a.click(); URL.revokeObjectURL(a.href);
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  ERROR HELPERS
+// ══════════════════════════════════════════════════════════════════
+function showError(msg) {
+  clearError();
+  const d = Object.assign(document.createElement('div'), { className:'errmsg', innerHTML:'⚠️ ' + msg });
+  document.querySelector('main').prepend(d);
+}
+function clearError() {
+  document.querySelector('.errmsg')?.remove();
+}
+
+// ══════════════════════════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════════════════════════
+buildScript();   // Show empty template immediately
+loadData();      // Fetch live MSRC data
+</script>
+</body>
+</html>
