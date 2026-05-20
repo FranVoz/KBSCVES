@@ -561,7 +561,7 @@ foreach ($pc in $Computers) {
 // ══════════════════════════════════════════════════════════════════
 //  VERSION — bump on each modification
 // ══════════════════════════════════════════════════════════════════
-const APP_VERSION = 'v1.1.0';
+const APP_VERSION = 'v1.2.0';
 
 // ══════════════════════════════════════════════════════════════════
 //  STATE
@@ -576,6 +576,7 @@ const S = {
   prevPanel: 'dashboard',
   cveStatus:    {},   // { cveId: { status, missingKbs[] } } — from scan-vulns.ps1
   cveDetection: {},   // { cveId: { source, script } }    — from build-detections.ps1
+  kbDates:      {},   // { kb: "YYYY-MM-DD" }              — from fetch-kb-dates.ps1
   scanMeta:     null, // { scanned, scanHost }
 };
 
@@ -711,6 +712,10 @@ function kbRef(kb, extraStyle) {
   if (S.kbMap.has(kb))
     return `<a class="kblink"${s} href="#" onclick="event.preventDefault();event.stopPropagation();showKB('${kb}')">${kb}</a>`;
   return `<a class="kblink"${s} href="https://support.microsoft.com/search/results?query=${kb}" target="_blank" onclick="event.stopPropagation()">${kb}</a>`;
+}
+function kbDate(kb) {
+  const d = S.kbDates[kb];
+  return (d && d !== 'unknown') ? d : '';
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -912,6 +917,12 @@ async function loadMonth(monthId) {
   S.cveDetection = result.cveDetection || {};
   S.scanMeta     = result.scanMeta     || null;
 
+  // KB release dates (global cache, maintained by fetch-kb-dates.ps1)
+  try {
+    const rd = await fetch('data/_kb-dates.json');
+    if (rd.ok) S.kbDates = await rd.json();
+  } catch {}
+
   if (source === 'demo') {
     const b = document.createElement('div');
     b.className = 'banner';
@@ -1031,11 +1042,13 @@ function renderKBs() {
     const prods = [...e.products].slice(0, 2).map(p =>
       `<span class="tag">${p.replace('Windows ','W').replace('Server ','Srv ')}</span>`).join('');
     const more = e.products.size > 2 ? `<span class="tag">+${e.products.size-2}</span>` : '';
+    const dt = kbDate(e.kb);
     return `<tr onclick="showKB('${e.kb}')">
       <td>
         ${kbRef(e.kb)}
         ${e.hasExpl ? '<span class="b b-exp" style="margin-left:6px">🚨 EXPLOIT</span>' : ''}
       </td>
+      <td style="white-space:nowrap;color:var(--muted)">${dt || '—'}</td>
       <td><span class="${bc(e.maxSev)}">${e.maxSev}</span></td>
       <td><strong>${e.cves.length}</strong></td>
       <td>${e.cves.filter(c=>c.exploited).length||'<span style="color:var(--green)">—</span>'}</td>
@@ -1048,7 +1061,7 @@ function renderKBs() {
   }).join('');
 
   document.getElementById('kbBox').innerHTML = `<table>
-    <thead><tr><th>KB Article</th><th>Sévérité max</th><th>CVEs</th><th>Exploitées</th><th>Produits</th><th></th></tr></thead>
+    <thead><tr><th>KB Article</th><th>Date</th><th>Sévérité max</th><th>CVEs</th><th>Exploitées</th><th>Produits</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table>`;
   document.getElementById('kbPager').innerHTML = pages <= 1 ? '' :
     `<div class="pager">
@@ -1228,7 +1241,10 @@ function showCVE(id) {
   const v = S.vulns.find(x => x.cveId === id); if (!v) return;
   S.prevPanel = document.querySelector('.panel.active')?.id.replace('panel-','') || 'dashboard';
 
-  const kbLinks = v.kbs.map(k => kbRef(k)).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
+  const kbLinks = v.kbs.map(k => {
+    const dt = kbDate(k);
+    return kbRef(k) + (dt ? ` <span style="font-size:.7rem;color:var(--muted)">(${dt})</span>` : '');
+  }).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
   const prods = v.products.slice(0,12).join(', ') +
     (v.products.length > 12 ? ` … +${v.products.length-12}` : '');
   const detection  = S.cveDetection[v.cveId];
@@ -1326,6 +1342,7 @@ function showKB(kb) {
       <span class="kblink" style="font-size:1.4rem;font-weight:700">${kb}</span>
       <span class="${bc(e.maxSev)}">${e.maxSev}</span>
       ${e.hasExpl ? '<span class="b b-exp">🚨 EXPLOIT</span>' : ''}
+      ${kbDate(kb) ? `<span class="b" style="background:rgba(120,130,150,.15);color:var(--muted)">📅 ${kbDate(kb)}</span>` : ''}
     </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
       <div class="msec"><h4>CVEs couverts</h4><strong style="font-size:2rem;color:var(--blue)">${e.cves.length}</strong></div>
