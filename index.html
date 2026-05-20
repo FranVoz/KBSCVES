@@ -1160,6 +1160,25 @@ function filterMap(q) {
 // ══════════════════════════════════════════════════════════════════
 //  MODALS
 // ══════════════════════════════════════════════════════════════════
+function buildCveDetectScript(cveId, kbs) {
+  if (!kbs.length) return `# Aucun KB correctif identifié pour ${cveId}\nWrite-Host "Impossible de vérifier : aucun KB associé" -ForegroundColor Yellow`;
+  const kbArray = kbs.map(k => `"${k}"`).join(', ');
+  return `# Détection ${cveId}
+# Vérifie si les correctifs sont installés sur la machine locale
+$cveId        = "${cveId}"
+$kbCorrecifs  = @(${kbArray})
+
+$installes = (Get-HotFix | Select-Object -ExpandProperty HotFixID) -replace "^KB", "KB"
+$manquants = $kbCorrecifs | Where-Object { $installes -notcontains $_ }
+
+if ($manquants.Count -eq 0) {
+    Write-Host "✅ PROTÉGÉ  — $cveId : tous les correctifs sont installés." -ForegroundColor Green
+} else {
+    Write-Host "⚠️  VULNÉRABLE — $cveId : correctifs manquants :" -ForegroundColor Red
+    $manquants | ForEach-Object { Write-Host "   - $_" -ForegroundColor Red }
+}`;
+}
+
 function showCVE(id) {
   const v = S.vulns.find(x => x.cveId === id); if (!v) return;
   S.prevPanel = document.querySelector('.panel.active')?.id.replace('panel-','') || 'dashboard';
@@ -1167,6 +1186,8 @@ function showCVE(id) {
   const kbLinks = v.kbs.map(k => kbRef(k)).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
   const prods = v.products.slice(0,12).join(', ') +
     (v.products.length > 12 ? ` … +${v.products.length-12}` : '');
+  const psScript = buildCveDetectScript(v.cveId, v.kbs);
+  const psId = 'ps-cve-' + v.cveId.replace(/[^a-z0-9]/gi,'');
 
   document.getElementById('cveDetailContent').innerHTML = `
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap">
@@ -1189,12 +1210,20 @@ function showCVE(id) {
     <div class="msec"><h4>KBs correctifs (${v.kbs.length})</h4><p>${kbLinks}</p></div>
     <div class="msec"><h4>Produits affectés (${v.products.length})</h4>
       <p style="font-size:.8rem;color:var(--muted)">${prods || '—'}</p></div>
+    <div class="msec" style="margin-top:20px">
+      <div class="codehdr">
+        <div><div class="codetitle">🔍 Script de détection PowerShell</div>
+          <div class="codedesc">Vérifie si ${v.cveId} est corrigée sur la machine locale</div>
+        </div>
+        <button class="copybtn" onclick="copyEl('${psId}',this)">📋 Copier</button>
+      </div>
+      <pre class="codeblock" id="${psId}">${psScript.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
       <a href="https://msrc.microsoft.com/update-guide/vulnerability/${v.cveId}" target="_blank">
         <button>🔗 MSRC Advisory</button></a>
       <a href="https://nvd.nist.gov/vuln/detail/${v.cveId}" target="_blank">
         <button class="sec">🔗 NVD</button></a>
-      <button class="sec" onclick="quickCVE('${v.cveId}')">💻 Générer PS Script</button>
     </div>`;
 
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
