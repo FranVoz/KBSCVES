@@ -12418,6 +12418,16 @@
                                                 "source":  "not-found",
                                                 "file":  "",
                                                 "script":  ""
+                                            },
+                         "CVE-2026-32204":  {
+                                                "source":  "not-found",
+                                                "file":  "",
+                                                "script":  ""
+                                            },
+                         "CVE-2026-33117":  {
+                                                "source":  "not-found",
+                                                "file":  "",
+                                                "script":  ""
                                             }
                      }
 }
