@@ -663,6 +663,12 @@ const SEV_ORD = { Critical: 4, Important: 3, Moderate: 2, Low: 1 };
 const SEV_CLS = { Critical: 'crit', Important: 'imp', Moderate: 'mod', Low: 'low' };
 function sevOrd(s) { return SEV_ORD[s] || 0; }
 function bc(s) { return `b b-${SEV_CLS[s] || 'low'}`; }
+function kbRef(kb, extraStyle) {
+  const s = extraStyle ? ` style="${extraStyle}"` : '';
+  if (S.kbMap.has(kb))
+    return `<a class="kblink"${s} href="#" onclick="event.preventDefault();event.stopPropagation();showKB('${kb}')">${kb}</a>`;
+  return `<a class="kblink"${s} href="https://support.microsoft.com/search/results?query=${kb}" target="_blank" onclick="event.stopPropagation()">${kb}</a>`;
+}
 
 // ══════════════════════════════════════════════════════════════════
 //  TABS
@@ -963,8 +969,7 @@ function renderKBs() {
     const more = e.products.size > 2 ? `<span class="tag">+${e.products.size-2}</span>` : '';
     return `<tr onclick="showKB('${e.kb}')">
       <td>
-        <a class="kblink" href="https://support.microsoft.com/search/results?query=${e.kb}"
-           target="_blank" onclick="event.stopPropagation()">${e.kb}</a>
+        ${kbRef(e.kb)}
         ${e.hasExpl ? '<span class="b b-exp" style="margin-left:6px">🚨 EXPLOIT</span>' : ''}
       </td>
       <td><span class="${bc(e.maxSev)}">${e.maxSev}</span></td>
@@ -1017,9 +1022,7 @@ function renderCVEs() {
   const cvssColor = s => s >= 9 ? 'var(--red)' : s >= 7 ? 'var(--orange)' : 'var(--text)';
 
   const rows = vulns.map(v => {
-    const kbHtml = v.kbs.slice(0,3).map(k =>
-      `<a class="kblink" style="font-size:.75rem" href="https://support.microsoft.com/search/results?query=${k}"
-         target="_blank" onclick="event.stopPropagation()">${k}</a>`).join(' ') +
+    const kbHtml = v.kbs.slice(0,3).map(k => kbRef(k, 'font-size:.75rem')).join(' ') +
       (v.kbs.length>3 ? `<span class="tag">+${v.kbs.length-3}</span>` : '');
 
     const flags = [
@@ -1103,9 +1106,7 @@ function filterMap(q) {
 function showCVE(id) {
   const v = S.vulns.find(x => x.cveId === id); if (!v) return;
 
-  const kbLinks = v.kbs.map(k =>
-    `<a class="kblink" href="https://support.microsoft.com/search/results?query=${k}" target="_blank">${k}</a>`
-  ).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
+  const kbLinks = v.kbs.map(k => kbRef(k)).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
 
   const prods = v.products.slice(0,12).join(', ') +
     (v.products.length > 12 ? ` … +${v.products.length-12}` : '');
