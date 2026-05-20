@@ -1,4 +1,4 @@
-# build-detections.ps1
+﻿# build-detections.ps1
 # Pour chaque CVE du mois :
 #   1. Requête CIS OVAL repo (GitHub) pour trouver une définition OVAL
 #   2. Parse le XML OVAL : registry tests, file version tests, WMI tests

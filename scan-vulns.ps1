@@ -1,4 +1,4 @@
-# scan-vulns.ps1
+﻿# scan-vulns.ps1
 # Vérifie la vulnérabilité locale pour chaque CVE du mois et met à jour le JSON de cache.
 # Usage : .\scan-vulns.ps1 [-Month "2026-May"]
 # Après exécution : git add data\ && git commit && git push
