@@ -140,6 +140,11 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
 @media(max-width:820px){.dbgrid{grid-template-columns:1fr}}
 .dbsec h3{margin-bottom:10px;font-size:.9rem}
 
+/* ── Pagination ── */
+.pager{display:flex;align-items:center;gap:10px;padding:10px 4px;font-size:.82rem;color:var(--muted);flex-wrap:wrap}
+.pager button{padding:4px 12px}
+.pager button:disabled{opacity:.35;cursor:default}
+
 /* ── Notification banner ── */
 .banner{background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.3);
   color:var(--blue);padding:8px 14px;border-radius:6px;margin-bottom:14px;font-size:.82rem}
@@ -150,7 +155,6 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
 <header>
   <h1>🛡️ MS Patch &amp; CVE Dashboard</h1>
   <div class="hcontrols">
-    <select id="selMonth" title="Mois des mises à jour" style="min-width:200px"></select>
     <button onclick="loadData()" id="btnRefresh">⟳ Actualiser</button>
     <button class="sec" onclick="cycleProxy()" id="btnProxy" title="Changer de mode si erreur CORS">🌐 Direct</button>
     <span class="muted" id="lastUpdate">Non chargé</span>
@@ -181,37 +185,49 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
 <!-- ═══════════════════════════════════════════════════════ KBs -->
 <div id="panel-kbs" class="panel">
   <div class="fbar">
-    <input type="text" id="kbSearch" placeholder="🔍 Rechercher KB, CVE, produit…" oninput="renderKBs()">
-    <select id="kbSev" onchange="renderKBs()">
+    <input type="text" id="kbSearch" placeholder="🔍 Rechercher KB, CVE, produit…" oninput="S.kbPage=1;renderKBs()">
+    <select id="kbSev" onchange="S.kbPage=1;renderKBs()">
       <option value="">Toutes sévérités</option>
       <option value="Critical">🔴 Critique</option>
       <option value="Important">🟠 Important</option>
       <option value="Moderate">🟡 Modéré</option>
     </select>
+    <select id="kbPageSize" onchange="S.kbPage=1;renderKBs()">
+      <option value="100">100 / page</option>
+      <option value="200">200 / page</option>
+      <option value="500">500 / page</option>
+    </select>
     <button class="sec" onclick="exportCSV('kb')">⬇ CSV</button>
   </div>
   <div id="kbBox" class="tbox"><div class="loading"><div class="spin"></div></div></div>
+  <div id="kbPager"></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ CVEs -->
 <div id="panel-cves" class="panel">
   <div class="fbar">
-    <input type="text" id="cveSearch" placeholder="🔍 CVE-ID, titre, KB…" oninput="renderCVEs()">
-    <select id="cveSev" onchange="renderCVEs()">
+    <input type="text" id="cveSearch" placeholder="🔍 CVE-ID, titre, KB…" oninput="S.cvePage=1;renderCVEs()">
+    <select id="cveSev" onchange="S.cvePage=1;renderCVEs()">
       <option value="">Toutes sévérités</option>
       <option value="Critical">🔴 Critique</option>
       <option value="Important">🟠 Important</option>
       <option value="Moderate">🟡 Modéré</option>
       <option value="Low">🟢 Low</option>
     </select>
-    <select id="cveExp" onchange="renderCVEs()">
+    <select id="cveExp" onchange="S.cvePage=1;renderCVEs()">
       <option value="">Toutes</option>
       <option value="yes">🚨 Exploitées seulement</option>
       <option value="pub">📢 Divulguées publiquement</option>
     </select>
+    <select id="cvePageSize" onchange="S.cvePage=1;renderCVEs()">
+      <option value="100">100 / page</option>
+      <option value="200">200 / page</option>
+      <option value="500">500 / page</option>
+    </select>
     <button class="sec" onclick="exportCSV('cve')">⬇ CSV</button>
   </div>
   <div id="cveBox" class="tbox"><div class="loading"><div class="spin"></div></div></div>
+  <div id="cvePager"></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════ MAPPING -->
@@ -530,10 +546,12 @@ foreach ($pc in $Computers) {
 //  STATE
 // ══════════════════════════════════════════════════════════════════
 const S = {
-  vulns:   [],          // parsed vulnerabilities
-  kbMap:   new Map(),   // KB → { kb, cves[], products Set, maxSev, hasExpl }
-  prodMap: new Map(),   // productId → name
+  vulns:   [],
+  kbMap:   new Map(),
+  prodMap: new Map(),
   month:   null,
+  kbPage:  1,
+  cvePage: 1,
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -734,22 +752,18 @@ function getDemoData() {
 const NVD_API = 'https://services.nvd.nist.gov/rest/json/cves/2.0';
 const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
-function buildMonthSelector() {
-  const sel = document.getElementById('selMonth');
-  const prev = sel.value;
-  sel.innerHTML = '';
+function latestPatchMonth() {
   const now = new Date();
-  for (let i = 0; i < 18; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const id = `${d.getFullYear()}-${MON[d.getMonth()]}`;
-    const o = document.createElement('option');
-    o.value = id;
-    o.textContent = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
-      .replace(/^./, c => c.toUpperCase());
-    sel.appendChild(o);
+  // Find 2nd Tuesday of current month
+  const d = new Date(now.getFullYear(), now.getMonth(), 1);
+  let count = 0;
+  while (count < 2) { if (d.getDay() === 2) count++; if (count < 2) d.setDate(d.getDate() + 1); }
+  // Before Patch Tuesday → use previous month
+  if (now < d) {
+    const p = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    return `${p.getFullYear()}-${MON[p.getMonth()]}`;
   }
-  if (prev) sel.value = prev;
-  sel.onchange = () => loadMonth(sel.value);
+  return `${now.getFullYear()}-${MON[now.getMonth()]}`;
 }
 
 function parseNVD(data) {
@@ -805,11 +819,13 @@ async function loadData() {
   const btn = document.getElementById('btnRefresh');
   btn.textContent = '⟳ Chargement…'; btn.disabled = true;
   clearError();
-  buildMonthSelector();
+  const monthId = latestPatchMonth();
   try {
-    await loadMonth(document.getElementById('selMonth').value);
-    document.getElementById('lastUpdate').textContent =
-      'Mis à jour : ' + new Date().toLocaleString('fr-FR');
+    await loadMonth(monthId);
+    const label = new Date(monthId.replace(/-(\w+)$/, (_, m) => '-' + (MON.indexOf(m) + 1)))
+      .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+      .replace(/^./, c => c.toUpperCase());
+    document.getElementById('lastUpdate').textContent = label + ' · ' + new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
   } catch (e) {
     showError('Erreur : ' + e.message);
   } finally {
@@ -960,10 +976,16 @@ function renderKBs() {
   if (!entries.length) {
     document.getElementById('kbBox').innerHTML =
       '<div style="padding:20px;text-align:center;color:var(--muted)">Aucun KB trouvé</div>';
+    document.getElementById('kbPager').innerHTML = '';
     return;
   }
 
-  const rows = entries.map(e => {
+  const ps = parseInt(document.getElementById('kbPageSize')?.value || '100');
+  const pages = Math.ceil(entries.length / ps);
+  S.kbPage = Math.min(S.kbPage, pages);
+  const paged = entries.slice((S.kbPage - 1) * ps, S.kbPage * ps);
+
+  const rows = paged.map(e => {
     const prods = [...e.products].slice(0, 2).map(p =>
       `<span class="tag">${p.replace('Windows ','W').replace('Server ','Srv ')}</span>`).join('');
     const more = e.products.size > 2 ? `<span class="tag">+${e.products.size-2}</span>` : '';
@@ -987,6 +1009,12 @@ function renderKBs() {
   document.getElementById('kbBox').innerHTML = `<table>
     <thead><tr><th>KB Article</th><th>Sévérité max</th><th>CVEs</th><th>Exploitées</th><th>Produits</th><th>Actions</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
+  document.getElementById('kbPager').innerHTML = pages <= 1 ? '' :
+    `<div class="pager">
+      <button ${S.kbPage===1?'disabled':''} onclick="S.kbPage--;renderKBs()">‹ Préc</button>
+      <span>Page ${S.kbPage} / ${pages} &nbsp;·&nbsp; ${entries.length} KBs</span>
+      <button ${S.kbPage===pages?'disabled':''} onclick="S.kbPage++;renderKBs()">Suiv ›</button>
+    </div>`;
 }
 
 // ══════════════════════════════════════════════════════════════════
@@ -1016,12 +1044,18 @@ function renderCVEs() {
   if (!vulns.length) {
     document.getElementById('cveBox').innerHTML =
       '<div style="padding:20px;text-align:center;color:var(--muted)">Aucun CVE trouvé</div>';
+    document.getElementById('cvePager').innerHTML = '';
     return;
   }
 
+  const ps = parseInt(document.getElementById('cvePageSize')?.value || '100');
+  const pages = Math.ceil(vulns.length / ps);
+  S.cvePage = Math.min(S.cvePage, pages);
+  const paged = vulns.slice((S.cvePage - 1) * ps, S.cvePage * ps);
+
   const cvssColor = s => s >= 9 ? 'var(--red)' : s >= 7 ? 'var(--orange)' : 'var(--text)';
 
-  const rows = vulns.map(v => {
+  const rows = paged.map(v => {
     const kbHtml = v.kbs.slice(0,3).map(k => kbRef(k, 'font-size:.75rem')).join(' ') +
       (v.kbs.length>3 ? `<span class="tag">+${v.kbs.length-3}</span>` : '');
 
@@ -1044,6 +1078,12 @@ function renderCVEs() {
   document.getElementById('cveBox').innerHTML = `<table>
     <thead><tr><th>CVE ID</th><th>Titre</th><th>Sévérité</th><th>CVSS</th><th>KBs correctifs</th><th>Statut</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table>`;
+  document.getElementById('cvePager').innerHTML = pages <= 1 ? '' :
+    `<div class="pager">
+      <button ${S.cvePage===1?'disabled':''} onclick="S.cvePage--;renderCVEs()">‹ Préc</button>
+      <span>Page ${S.cvePage} / ${pages} &nbsp;·&nbsp; ${vulns.length} CVEs</span>
+      <button ${S.cvePage===pages?'disabled':''} onclick="S.cvePage++;renderCVEs()">Suiv ›</button>
+    </div>`;
 }
 
 // ══════════════════════════════════════════════════════════════════
