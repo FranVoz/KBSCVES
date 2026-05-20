@@ -32,6 +32,9 @@
   <script>
   // Changelog — entrée la plus récente en premier. Ajouter une entrée à chaque bump de version.
   const CHANGELOG = [
+    { v: 'v1.3.2', d: '2026-05-20', items: [
+      'Cache-busting des fichiers de données (?v=version) — évite d\'afficher d\'anciens scripts/données après une mise à jour',
+    ]},
     { v: 'v1.3.1', d: '2026-05-20', items: [
       'Correction détection : protégé dès qu\'UN KB correctif est présent (les KB couvrent plusieurs OS, la machine n\'en installe qu\'un). Avant : faux « vulnérable » car tous les KB exigés.',
     ]},

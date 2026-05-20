@@ -563,7 +563,7 @@ foreach ($pc in $Computers) {
 // ══════════════════════════════════════════════════════════════════
 //  VERSION — bump on each modification
 // ══════════════════════════════════════════════════════════════════
-const APP_VERSION = 'v1.3.1';
+const APP_VERSION = 'v1.3.2';
 
 // ══════════════════════════════════════════════════════════════════
 //  STATE
@@ -881,7 +881,7 @@ async function loadMonth(monthId) {
 
   // 1. Try pre-fetched static cache (data/{monthId}.json)
   try {
-    const r = await fetch(`data/${monthId}.json`);
+    const r = await fetch(`data/${monthId}.json?v=${APP_VERSION}`);
     if (r.ok) {
       const cached = await r.json();
       result = {
@@ -926,7 +926,7 @@ async function loadMonth(monthId) {
 
   // KB release dates (global cache, maintained by fetch-kb-dates.ps1)
   try {
-    const rd = await fetch('data/_kb-dates.json');
+    const rd = await fetch(`data/_kb-dates.json?v=${APP_VERSION}`);
     if (rd.ok) S.kbDates = await rd.json();
   } catch {}
 
