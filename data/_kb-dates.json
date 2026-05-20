@@ -1042,5 +1042,1665 @@
   "KB5081277": {
     "date": "2026-03-10",
     "desc": ".NET 8.0.25 Security Update"
+  },
+  "KB5055519": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5055526": {
+    "date": "2025-04-08",
+    "desc": "Cumulative Update for Microsoft server operating system, version 22H2"
+  },
+  "KB5055518": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5055528": {
+    "date": "2025-04-08",
+    "desc": "Cumulative Update for Windows 11 Version 23H2"
+  },
+  "KB5055523": {
+    "date": "2025-04-08",
+    "desc": "Cumulative Update for Windows 11 Version 24H2"
+  },
+  "KB5055527": {
+    "date": "2025-04-08",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5055547": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5055521": {
+    "date": "2025-04-08",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5055609": {
+    "date": "2025-04-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5055596": {
+    "date": "2025-04-08",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5055561": {
+    "date": "2025-04-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5055570": {
+    "date": "2025-04-08",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5055581": {
+    "date": "2025-04-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5055557": {
+    "date": "2025-04-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5002669": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002700": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002623": {
+    "date": "2025-04-15",
+    "desc": "Update for Microsoft Office 2016"
+  },
+  "KB5002699": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002680": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB4484432": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002692": {
+    "date": "2025-04-15",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002682": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002691": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002702": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Word 2016"
+  },
+  "KB5002704": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002705": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5056717": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5056716": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5056718": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5002622": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft OneNote 2016"
+  },
+  "KB5002588": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002703": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002701": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Access 2016"
+  },
+  "KB5055515": {
+    "date": "2025-04-08",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2008 R2"
+  },
+  "KB5002573": {
+    "date": "2025-04-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5063877": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Windows Server 2019"
+  },
+  "KB5063880": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Microsoft server operating system version 21H2"
+  },
+  "KB5063812": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5063709": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Windows 10 Version 22H2"
+  },
+  "KB5063875": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Windows 11 Version 22H2"
+  },
+  "KB5063878": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Windows 11 Version 24H2"
+  },
+  "KB5064010": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5063899": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5063871": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5059086": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5063760": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2017 RTM GDR"
+  },
+  "KB5063758": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2019 RTM GDR"
+  },
+  "KB5063762": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 GDR"
+  },
+  "KB5063761": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 CU"
+  },
+  "KB5063759": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2017 RTM CU"
+  },
+  "KB5063756": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2022 RTM GDR"
+  },
+  "KB5063814": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2022 RTM CU"
+  },
+  "KB5063757": {
+    "date": "2025-08-12",
+    "desc": "Security Update for SQL Server 2019 RTM CU"
+  },
+  "KB5063222": {
+    "date": "2025-08-12",
+    "desc": "Security Update For Exchange Server 2019 CU14"
+  },
+  "KB5063223": {
+    "date": "2025-08-12",
+    "desc": "Security Update For Exchange Server 2016 CU23"
+  },
+  "KB5063221": {
+    "date": "2025-08-12",
+    "desc": "Security Update For Exchange Server 2019 CU15"
+  },
+  "KB5063224": {
+    "date": "2025-08-25",
+    "desc": "Security Update For Exchange Server 2025"
+  },
+  "KB5002752": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002758": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002771": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002769": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002773": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002765": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft PowerPoint 2016"
+  },
+  "KB5047155": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5050672": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5050674": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5050673": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5062557": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Windows Server 2019"
+  },
+  "KB5062572": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Microsoft server operating system version 21H2"
+  },
+  "KB5062554": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Windows 10 Version 21H2"
+  },
+  "KB5062552": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Windows 11 Version 22H2"
+  },
+  "KB5062553": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Windows 11 Version 24H2"
+  },
+  "KB5062570": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5062561": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Windows 10 Version 1507"
+  },
+  "KB5062560": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5062624": {
+    "date": "2025-07-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5062618": {
+    "date": "2025-07-08",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5062632": {
+    "date": "2025-07-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5062619": {
+    "date": "2025-07-08",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5062592": {
+    "date": "2025-07-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5062597": {
+    "date": "2025-07-08",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5063889": {
+    "date": "2025-08-12",
+    "desc": "Cumulative Update for Windows 10 Version 1507"
+  },
+  "KB5063888": {
+    "date": "2025-08-12",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5063948": {
+    "date": "2025-08-12",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5063947": {
+    "date": "2025-08-12",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5063927": {
+    "date": "2025-08-12",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5063906": {
+    "date": "2025-08-12",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5063950": {
+    "date": "2025-08-12",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5064483": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5002756": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002772": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002770": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002763": {
+    "date": "2025-08-12",
+    "desc": "Security Update for Microsoft Word 2016"
+  },
+  "KB5065428": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Windows 10 Version 1809"
+  },
+  "KB5065432": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Microsoft server operating system version 21H2"
+  },
+  "KB5065306": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5065429": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Windows 10 Version 21H2"
+  },
+  "KB5065431": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Windows 11 Version 23H2"
+  },
+  "KB5065426": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Windows 11, version 25H2"
+  },
+  "KB5065474": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5065425": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5065427": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5058392": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Update for Windows 10 Version 1809"
+  },
+  "KB5058385": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Update for Microsoft server operating system, version 22H2"
+  },
+  "KB5058500": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5058379": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5058405": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Update for Windows 11 Version 23H2"
+  },
+  "KB5058411": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Update for Windows 11 Version 24H2"
+  },
+  "KB5058384": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5058387": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Update for Windows 10 Version 1507"
+  },
+  "KB5058383": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Update for Windows Server 2016"
+  },
+  "KB5052000": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5051979": {
+    "date": "2025-02-11",
+    "desc": "Cumulative Update for Microsoft server operating system, version 22H2"
+  },
+  "KB5052106": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5051974": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5051989": {
+    "date": "2025-02-11",
+    "desc": "Cumulative Update for Windows 11 Version 22H2"
+  },
+  "KB5051987": {
+    "date": "2025-02-11",
+    "desc": "Cumulative Update for Windows 11 Version 24H2"
+  },
+  "KB5052105": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5051980": {
+    "date": "2025-02-11",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5052006": {
+    "date": "2025-02-11",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5052040": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5052038": {
+    "date": "2025-02-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5052072": {
+    "date": "2025-02-11",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5052016": {
+    "date": "2025-02-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5052032": {
+    "date": "2025-02-11",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5052020": {
+    "date": "2025-02-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5052042": {
+    "date": "2025-02-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5002179": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5051972": {
+    "date": "2025-02-11",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2008 R2"
+  },
+  "KB5002679": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002687": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002684": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002686": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002685": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002678": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002681": {
+    "date": "2025-02-11",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5050008": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for Windows Server 2019"
+  },
+  "KB5049983": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for Microsoft server operating system, version 22H2"
+  },
+  "KB5049981": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5050021": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for Windows 11 Version 23H2"
+  },
+  "KB5050009": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for Windows 11 Version 24H2"
+  },
+  "KB5049984": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5050013": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5049993": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5050063": {
+    "date": "2025-01-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5050061": {
+    "date": "2025-01-14",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5050049": {
+    "date": "2025-01-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5050006": {
+    "date": "2025-01-14",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5050004": {
+    "date": "2025-01-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5050048": {
+    "date": "2025-01-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5050526": {
+    "date": "2025-01-14",
+    "desc": ".NET 9.0.1 Security Update for x64 Server"
+  },
+  "KB5049994": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2008 R2"
+  },
+  "KB5049688": {
+    "date": "2025-02-11",
+    "desc": "Security update for the remote code execution vulnerability in Microsoft Visual Studio 2015 Update 3"
+  },
+  "KB5050525": {
+    "date": "2025-01-14",
+    "desc": ".NET 8.0.12 Security Update"
+  },
+  "KB5049622": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Microsoft server operating system version 24H2"
+  },
+  "KB5049614": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 4.8 for Windows 10 Version 1607"
+  },
+  "KB5050183": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5.1, 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8 for Windows Server 2008 R2"
+  },
+  "KB5049619": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.8 for Windows Server 2008 R2"
+  },
+  "KB5050180": {
+    "date": "2025-01-14",
+    "desc": "Security Only Update for .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8 for Windows Server 2008 R2"
+  },
+  "KB5049628": {
+    "date": "2025-01-14",
+    "desc": "Security Only Update for .NET Framework 4.8 for Windows Server 2008 R2"
+  },
+  "KB5050184": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5, 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8 for Windows Server 2012"
+  },
+  "KB5049616": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.8 for Windows Server 2012"
+  },
+  "KB5050185": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5, 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8 for Windows Server 2012 R2"
+  },
+  "KB5049618": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.8 for Windows Server 2012 R2"
+  },
+  "KB5050182": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.7.2 for Windows 10 Version 1809"
+  },
+  "KB5049615": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8 for Windows 10 Version 1809"
+  },
+  "KB5050187": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5, 4.8 and 4.8.1 for Microsoft server operating system version 21H2"
+  },
+  "KB5049617": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8 for Microsoft server operating system version 21H2"
+  },
+  "KB5050416": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8 for Windows 10 Version 21H2"
+  },
+  "KB5050188": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5, 4.8 and 4.8.1 for Windows 10 Version 22H2"
+  },
+  "KB5049613": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8 for Windows 10 Version 22H2"
+  },
+  "KB5049608": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.7.2 for Windows 10 Version 1809"
+  },
+  "KB5049611": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.6.2 for Windows Server 2008 SP2"
+  },
+  "KB5049627": {
+    "date": "2025-01-14",
+    "desc": "Security Only Update for .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2 for Windows Server 2008 R2"
+  },
+  "KB5049609": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2 for Windows Server 2012"
+  },
+  "KB5049610": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2 for Windows Server 2012 R2"
+  },
+  "KB5049625": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Microsoft server operating system version 21H2"
+  },
+  "KB5049624": {
+    "date": "2025-07-08",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Windows 11, version 23H2"
+  },
+  "KB5049621": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Windows 10 Version 21H2"
+  },
+  "KB5049620": {
+    "date": "2025-01-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Microsoft server operating system, version 23H2"
+  },
+  "KB5050186": {
+    "date": "2025-01-14",
+    "desc": "Security and Quality Rollup for .NET Framework 2.0, 3.0, 3.5 SP1, 4.6.2 for Windows Server 2008 SP2"
+  },
+  "KB5050181": {
+    "date": "2025-01-14",
+    "desc": "Security Only Update for .NET Framework 4.6.2 for Windows Server 2008 SP2"
+  },
+  "KB5002672": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002671": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002666": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002667": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002676": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002675": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002595": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002677": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002656": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft Outlook 2016"
+  },
+  "KB5002673": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002670": {
+    "date": "2025-01-14",
+    "desc": "Security Update for Microsoft Access 2016"
+  },
+  "KB5002688": {
+    "date": "2025-02-11",
+    "desc": "Update for Microsoft Access 2016"
+  },
+  "KB5002742": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002740": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002749": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002734": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5058713": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2019 RTM GDR"
+  },
+  "KB5058712": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2022 RTM GDR"
+  },
+  "KB5058722": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2019 RTM CU"
+  },
+  "KB5058721": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2022 RTM CU"
+  },
+  "KB5058716": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2017 RTM GDR"
+  },
+  "KB5058718": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 GDR"
+  },
+  "KB5058717": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 CU"
+  },
+  "KB5058714": {
+    "date": "2025-07-08",
+    "desc": "Security Update for SQL Server 2017 RTM CU"
+  },
+  "KB5060531": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Windows 10 Version 1809"
+  },
+  "KB5060526": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Microsoft server operating system version 21H2"
+  },
+  "KB5060842": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Windows 11 Version 24H2"
+  },
+  "KB5060118": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5061010": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5061059": {
+    "date": "2025-06-10",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5061018": {
+    "date": "2025-06-10",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5002760": {
+    "date": "2025-07-21",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002759": {
+    "date": "2025-07-21",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002754": {
+    "date": "2025-07-21",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002753": {
+    "date": "2025-07-21",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002768": {
+    "date": "2025-07-21",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002746": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft PowerPoint 2016"
+  },
+  "KB5001941": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB4464583": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002747": {
+    "date": "2025-07-01",
+    "desc": "Update for Microsoft Outlook 2016"
+  },
+  "KB5002655": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002744": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002741": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002751": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002743": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002739": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002745": {
+    "date": "2025-07-08",
+    "desc": "Security Update for Microsoft Word 2016"
+  },
+  "KB5063035": {
+    "date": "2025-07-08",
+    "desc": "Security update for the Diagnostic Hub Standard Collector denial of service vulnerability in Visual Studio 2015 Update 3"
+  },
+  "KB5060525": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5060999": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Windows 11 Version 22H2"
+  },
+  "KB5060841": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5061935": {
+    "date": "2025-06-10",
+    "desc": ".NET 8.0.17 Security Update for x64 Server"
+  },
+  "KB5061936": {
+    "date": "2025-06-10",
+    "desc": ".NET 9.0.6 Security Update for x64 Server"
+  },
+  "KB5058497": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5061198": {
+    "date": "2025-05-13",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5058429": {
+    "date": "2025-05-13",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5058430": {
+    "date": "2025-05-13",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5058454": {
+    "date": "2025-05-13",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5058451": {
+    "date": "2025-05-13",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5058403": {
+    "date": "2025-05-13",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5060533": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Windows 10 Version 21H2"
+  },
+  "KB5060998": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Update for Windows 10 Version 1507"
+  },
+  "KB5061026": {
+    "date": "2025-06-10",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5061072": {
+    "date": "2025-06-10",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5061078": {
+    "date": "2025-06-10",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5061036": {
+    "date": "2025-06-10",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5002730": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5060996": {
+    "date": "2025-06-10",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2012"
+  },
+  "KB5002732": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002729": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002736": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002728": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002735": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002616": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002731": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002727": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002710": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft Word 2016"
+  },
+  "KB5002683": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft Outlook 2016"
+  },
+  "KB5002689": {
+    "date": "2025-06-10",
+    "desc": "Security Update for Microsoft PowerPoint 2016"
+  },
+  "KB5053596": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5053603": {
+    "date": "2025-03-11",
+    "desc": "Cumulative Update for Microsoft server operating system, version 22H2"
+  },
+  "KB5053638": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5053606": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5053602": {
+    "date": "2025-03-11",
+    "desc": "Cumulative Update for Windows 11 Version 23H2"
+  },
+  "KB5053598": {
+    "date": "2025-03-11",
+    "desc": "Cumulative Update for Microsoft server operating system version 24H2"
+  },
+  "KB5053636": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5053599": {
+    "date": "2025-03-11",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5053618": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5053594": {
+    "date": "2025-03-11",
+    "desc": "Cumulative Update for Windows 10 Version 1607"
+  },
+  "KB5053888": {
+    "date": "2025-03-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5053995": {
+    "date": "2025-03-11",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5053620": {
+    "date": "2025-03-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5053627": {
+    "date": "2025-03-11",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5053886": {
+    "date": "2025-03-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5053887": {
+    "date": "2025-03-11",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5002693": {
+    "date": "2025-03-11",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5054229": {
+    "date": "2025-03-11",
+    "desc": ".NET 8.0.14 Security Update"
+  },
+  "KB5054230": {
+    "date": "2025-03-11",
+    "desc": ".NET 9.0.3 Security Update"
+  },
+  "KB5002662": {
+    "date": "2025-03-11",
+    "desc": "Security Update for Microsoft Word 2016"
+  },
+  "KB5002690": {
+    "date": "2025-03-11",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002696": {
+    "date": "2025-03-11",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002694": {
+    "date": "2025-03-11",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5053593": {
+    "date": "2025-03-11",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2012"
+  },
+  "KB5002697": {
+    "date": "2025-03-11",
+    "desc": "Security Update for Microsoft Access 2016"
+  },
+  "KB5059200": {
+    "date": "2025-05-22",
+    "desc": ".NET 8.0.16 Security Update"
+  },
+  "KB5059201": {
+    "date": "2025-05-13",
+    "desc": ".NET 9.0.5 Security Update"
+  },
+  "KB5058449": {
+    "date": "2025-05-13",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5061258": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5002722": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002712": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002708": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002706": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002709": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002707": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002717": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002711": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002716": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5061197": {
+    "date": "2025-05-13",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5061196": {
+    "date": "2025-05-13",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5061195": {
+    "date": "2025-05-13",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5058380": {
+    "date": "2025-05-13",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2012 R2"
+  },
+  "KB5002695": {
+    "date": "2025-05-13",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002801": {
+    "date": "2025-11-11",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002811": {
+    "date": "2025-11-11",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002810": {
+    "date": "2025-11-11",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002809": {
+    "date": "2025-11-11",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5067331": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5002805": {
+    "date": "2025-11-11",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002803": {
+    "date": "2025-11-11",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002800": {
+    "date": "2025-11-11",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5068403": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2017 RTM GDR"
+  },
+  "KB5068405": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2019 RTM GDR"
+  },
+  "KB5068401": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 GDR"
+  },
+  "KB5068400": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 CU"
+  },
+  "KB5068402": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2017 RTM CU"
+  },
+  "KB5068407": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2022 RTM GDR"
+  },
+  "KB5068404": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2019 RTM CU"
+  },
+  "KB5068406": {
+    "date": "2025-11-11",
+    "desc": "Security Update for SQL Server 2022 RTM CU"
+  },
+  "KB5066367": {
+    "date": "2025-10-14",
+    "desc": "Security Update For Exchange Server 2019 CU15"
+  },
+  "KB5066368": {
+    "date": "2025-10-14",
+    "desc": "Security Update For Exchange Server 2019 CU14"
+  },
+  "KB5066366": {
+    "date": "2025-10-14",
+    "desc": "Security Update For Exchange Server Subscription Edition"
+  },
+  "KB5066369": {
+    "date": "2025-10-14",
+    "desc": "Security Update For Exchange Server 2016 CU23"
+  },
+  "KB5068331": {
+    "date": "2025-10-14",
+    "desc": ".NET 8.0.21 Security Update"
+  },
+  "KB5068332": {
+    "date": "2025-10-14",
+    "desc": ".NET 9.0.10 Security Update"
+  },
+  "KB5066874": {
+    "date": "2025-10-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5066877": {
+    "date": "2025-10-14",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5066872": {
+    "date": "2025-10-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5066876": {
+    "date": "2025-10-14",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5066875": {
+    "date": "2025-10-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5066873": {
+    "date": "2025-10-14",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5002788": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002796": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002786": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002797": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002794": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002792": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002719": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002757": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002341": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002720": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Access 2016"
+  },
+  "KB5066840": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2012 R2"
+  },
+  "KB5066136": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 4.8 for Windows 10 Version 1607"
+  },
+  "KB5066739": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5.1, 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8 for Windows Server 2008 R2"
+  },
+  "KB5066141": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.8 for Windows Server 2008 R2"
+  },
+  "KB5066740": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5, 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8 for Windows Server 2012"
+  },
+  "KB5066138": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.8 for Windows Server 2012"
+  },
+  "KB5066741": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5, 4.6.2, 4.7, 4.7.1, 4.7.2, 4.8 for Windows Server 2012 R2"
+  },
+  "KB5066140": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.8 for Windows Server 2012 R2"
+  },
+  "KB5066738": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5, 4.7.2 and 4.8 for Windows 10 Version 1809"
+  },
+  "KB5066137": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8 for Windows 10 Version 1809"
+  },
+  "KB5066743": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5, 4.8 and 4.8.1 for Microsoft server operating system version 21H2"
+  },
+  "KB5066139": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8 for Microsoft server operating system version 21H2"
+  },
+  "KB5066746": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5, 4.8 and 4.8.1 for Windows 10 Version 21H2"
+  },
+  "KB5066135": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8 for Windows 10 Version 21H2"
+  },
+  "KB5066747": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5, 4.8 and 4.8.1 for Windows 10 Version 22H2"
+  },
+  "KB5066143": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.7.2 for Windows 10 Version 1809"
+  },
+  "KB5066742": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 2.0, 3.0, 3.5 SP1, 4.6.2 for Windows Server 2008 SP2"
+  },
+  "KB5066146": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.6.2 for Windows Server 2008 SP2"
+  },
+  "KB5066144": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2 for Windows Server 2012"
+  },
+  "KB5066145": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 4.6.2, 4.7, 4.7.1, 4.7.2 for Windows Server 2012 R2"
+  },
+  "KB5066134": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Microsoft server operating system version 21H2"
+  },
+  "KB5066130": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Windows 10 Version 22H2"
+  },
+  "KB5066133": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Windows 11, version 22H2"
+  },
+  "KB5066129": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Microsoft server operating system, version 23H2"
+  },
+  "KB5066131": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Microsoft server operating system version 24H2"
+  },
+  "KB5066149": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 2.0, 3.0 for Windows Server 2008 SP2"
+  },
+  "KB5040673": {
+    "date": "2024-07-09",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5 SP1 for Windows Server 2008 SP2"
+  },
+  "KB5066148": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5 for Windows Server 2012"
+  },
+  "KB5066151": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5 for Windows Server 2012 R2"
+  },
+  "KB5066150": {
+    "date": "2025-10-14",
+    "desc": "Security and Quality Rollup for .NET Framework 3.5.1 for Windows Server 2008 R2"
+  },
+  "KB5066128": {
+    "date": "2025-10-14",
+    "desc": "Cumulative Update for .NET Framework 3.5 and 4.8.1 for Windows 11, version 25H2"
+  },
+  "KB5002787": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002798": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002789": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft Word 2016"
+  },
+  "KB5002790": {
+    "date": "2025-10-14",
+    "desc": "Security Update for Microsoft PowerPoint 2016"
+  },
+  "KB5070883": {
+    "date": "2025-10-23",
+    "desc": "Cumulative Update for Windows Server 2019"
+  },
+  "KB5070884": {
+    "date": "2025-10-23",
+    "desc": "Cumulative Update for Microsoft server operating system version 21H2"
+  },
+  "KB5070892": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5070881": {
+    "date": "2025-10-23",
+    "desc": "Cumulative Update for Microsoft server operating system version 24H2"
+  },
+  "KB5070893": {
+    "date": "unknown",
+    "desc": ""
+  },
+  "KB5070879": {
+    "date": "2025-10-23",
+    "desc": "Cumulative Update for Microsoft server operating system version 23H2"
+  },
+  "KB5070882": {
+    "date": "2025-10-23",
+    "desc": "Cumulative Update for Windows Server 2016"
+  },
+  "KB5070887": {
+    "date": "2025-10-23",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5070886": {
+    "date": "2025-10-23",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5065508": {
+    "date": "2025-09-09",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008"
+  },
+  "KB5065511": {
+    "date": "2025-09-09",
+    "desc": "Security Only Quality Update for Windows Server 2008"
+  },
+  "KB5065468": {
+    "date": "2025-09-09",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2008 R2"
+  },
+  "KB5065510": {
+    "date": "2025-09-09",
+    "desc": "Security Only Quality Update for Windows Server 2008 R2"
+  },
+  "KB5065509": {
+    "date": "2025-09-09",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012"
+  },
+  "KB5065507": {
+    "date": "2025-09-09",
+    "desc": "Security Monthly Quality Rollup for Windows Server 2012 R2"
+  },
+  "KB5065430": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Update for Windows 10 Version 1507"
+  },
+  "KB5002776": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft Office Online Server"
+  },
+  "KB5002782": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft Excel 2016"
+  },
+  "KB5002778": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002775": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Core"
+  },
+  "KB5002784": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft SharePoint Server Subscription Edition"
+  },
+  "KB5002777": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft SharePoint Enterprise Server 2016"
+  },
+  "KB5002774": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft SharePoint Server 2019 Language Pack"
+  },
+  "KB5002780": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft Word 2016"
+  },
+  "KB5002781": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002576": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002766": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft Office 2016"
+  },
+  "KB5002779": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft PowerPoint 2016"
+  },
+  "KB5065224": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2017 RTM GDR"
+  },
+  "KB5065223": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2019 RTM GDR"
+  },
+  "KB5065226": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 GDR"
+  },
+  "KB5065227": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2016 Service Pack 3 CU"
+  },
+  "KB5065225": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2017 RTM CU"
+  },
+  "KB5065221": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2022 RTM GDR"
+  },
+  "KB5065220": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2022 RTM CU"
+  },
+  "KB5065222": {
+    "date": "2025-09-09",
+    "desc": "Security Update for SQL Server 2019 RTM CU"
+  },
+  "KB5065435": {
+    "date": "2025-09-09",
+    "desc": "Cumulative Security Update for Internet Explorer 11 for Windows Server 2012"
+  },
+  "KB5002762": {
+    "date": "2025-09-09",
+    "desc": "Security Update for Microsoft Office 2016"
   }
 }

@@ -155,6 +155,7 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
 <header>
   <h1>🛡️ MS Patch &amp; CVE Dashboard</h1>
   <div class="hcontrols">
+    <select id="monthSel" onchange="loadData()" title="Mois Patch Tuesday"></select>
     <button onclick="loadData()" id="btnRefresh">⟳ Actualiser</button>
     <button class="sec" onclick="cycleProxy()" id="btnProxy" title="Changer de mode si erreur CORS">🌐 Direct</button>
     <a id="lastUpdate" title="Voir le changelog" onclick="window.open('changelog.html','_blank')"
@@ -563,7 +564,7 @@ foreach ($pc in $Computers) {
 // ══════════════════════════════════════════════════════════════════
 //  VERSION — bump on each modification
 // ══════════════════════════════════════════════════════════════════
-const APP_VERSION = 'v1.4.0';
+const APP_VERSION = 'v1.5.0';
 
 // ══════════════════════════════════════════════════════════════════
 //  STATE
@@ -852,16 +853,32 @@ async function loadMonthFromNVD(msrcId) {
 // ══════════════════════════════════════════════════════════════════
 //  LOAD
 // ══════════════════════════════════════════════════════════════════
+function monthLabel(monthId) {
+  return new Date(monthId.replace(/-(\w+)$/, (_, m) => '-' + (MON.indexOf(m) + 1)))
+    .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+    .replace(/^./, c => c.toUpperCase());
+}
+async function populateMonths() {
+  const sel = document.getElementById('monthSel');
+  try {
+    const r = await fetch(`data/_months.json?v=${APP_VERSION}`);
+    if (!r.ok) throw new Error('no manifest');
+    const months = await r.json();
+    sel.innerHTML = months.map(m => `<option value="${m}">${monthLabel(m)}</option>`).join('');
+  } catch {
+    // Pas de manifeste → au moins le mois courant
+    const cur = latestPatchMonth();
+    sel.innerHTML = `<option value="${cur}">${monthLabel(cur)}</option>`;
+  }
+}
 async function loadData() {
   const btn = document.getElementById('btnRefresh');
   btn.textContent = '⟳ Chargement…'; btn.disabled = true;
   clearError();
-  const monthId = latestPatchMonth();
+  const sel = document.getElementById('monthSel');
+  const monthId = (sel && sel.value) ? sel.value : latestPatchMonth();
   try {
     await loadMonth(monthId);
-    const label = new Date(monthId.replace(/-(\w+)$/, (_, m) => '-' + (MON.indexOf(m) + 1)))
-      .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
-      .replace(/^./, c => c.toUpperCase());
     document.getElementById('lastUpdate').textContent = '🏷️ ' + APP_VERSION;
   } catch (e) {
     showError('Erreur : ' + e.message);
@@ -1900,7 +1917,7 @@ function cycleProxy() {
 
 document.getElementById('lastUpdate').textContent = '🏷️ ' + APP_VERSION;
 buildScript();   // Show empty template immediately
-loadData();      // Fetch live MSRC data
+populateMonths().then(loadData);   // Populate month selector then load
 </script>
 </body>
 </html>
