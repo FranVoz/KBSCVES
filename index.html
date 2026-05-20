@@ -559,6 +559,11 @@ foreach ($pc in $Computers) {
 
 <script>
 // ══════════════════════════════════════════════════════════════════
+//  VERSION — bump on each modification
+// ══════════════════════════════════════════════════════════════════
+const APP_VERSION = 'v1.1.0';
+
+// ══════════════════════════════════════════════════════════════════
 //  STATE
 // ══════════════════════════════════════════════════════════════════
 const S = {
@@ -845,7 +850,7 @@ async function loadData() {
     const label = new Date(monthId.replace(/-(\w+)$/, (_, m) => '-' + (MON.indexOf(m) + 1)))
       .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
       .replace(/^./, c => c.toUpperCase());
-    document.getElementById('lastUpdate').textContent = label + ' · ' + new Date().toLocaleTimeString('fr-FR', { hour:'2-digit', minute:'2-digit' });
+    document.getElementById('lastUpdate').textContent = APP_VERSION;
   } catch (e) {
     showError('Erreur : ' + e.message);
   } finally {
@@ -1227,10 +1232,9 @@ function showCVE(id) {
   const prods = v.products.slice(0,12).join(', ') +
     (v.products.length > 12 ? ` … +${v.products.length-12}` : '');
   const detection  = S.cveDetection[v.cveId];
-  const isOval     = detection && detection.source === 'oval-cis';
-  const psScript   = detection ? detection.script : buildCveDetectScript(v.cveId, v.kbs);
-  const psLabel    = isOval ? '🔬 Script de détection OVAL (CIS)' : '🔍 Script de détection PowerShell';
-  const psDesc     = isOval ? `Détection basée sur les définitions OVAL CIS — registre, versions de fichiers` : `Vérifie si ${v.cveId} est corrigée via Windows Update`;
+  const psScript   = (detection && detection.script) ? detection.script : buildCveDetectScript(v.cveId, v.kbs);
+  const psLabel    = '🔍 Script de détection PowerShell';
+  const psDesc     = `Vérifie si ${v.cveId} est corrigée via Windows Update`;
   const psId       = 'ps-cve-' + v.cveId.replace(/[^a-z0-9]/gi,'');
 
   document.getElementById('cveDetailContent').innerHTML = `
@@ -1790,6 +1794,7 @@ function cycleProxy() {
   loadData();
 }
 
+document.getElementById('lastUpdate').textContent = APP_VERSION;
 buildScript();   // Show empty template immediately
 loadData();      // Fetch live MSRC data
 </script>
