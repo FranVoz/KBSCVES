@@ -1069,7 +1069,7 @@ function renderMap() {
 
     return `<div class="mapitem" data-search="${e.kb} ${e.cves.map(c=>c.cveId).join(' ')}">
       <div style="min-width:130px">
-        <div class="mapkb">${e.kb}</div>
+        <div class="mapkb" style="cursor:pointer" onclick="showKB('${e.kb}')">${e.kb}</div>
         <span class="${bc(e.maxSev)}" style="font-size:.65rem">${e.maxSev}</span>
         ${e.hasExpl ? '<span class="b b-exp" style="font-size:.62rem;margin-left:4px">EXPLOIT</span>' : ''}
         <div style="font-size:.68rem;color:var(--muted);margin-top:4px;max-width:130px">${prods}</div>
