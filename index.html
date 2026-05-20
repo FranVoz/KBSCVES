@@ -230,6 +230,14 @@ textarea{resize:vertical;font-family:'Consolas',monospace;font-size:.82rem}
   <div id="cvePager"></div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════════ CVE DETAIL -->
+<div id="panel-cve-detail" class="panel">
+  <div style="margin-bottom:20px">
+    <button class="sec" onclick="goBack()">← Retour</button>
+  </div>
+  <div id="cveDetailContent"></div>
+</div>
+
 <!-- ═══════════════════════════════════════════════════════ KB DETAIL -->
 <div id="panel-kb-detail" class="panel">
   <div style="margin-bottom:20px">
@@ -560,7 +568,7 @@ const S = {
   month:   null,
   kbPage:  1,
   cvePage: 1,
-  prevTab: 'dashboard',
+  prevPanel: 'dashboard',
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -1154,22 +1162,25 @@ function filterMap(q) {
 // ══════════════════════════════════════════════════════════════════
 function showCVE(id) {
   const v = S.vulns.find(x => x.cveId === id); if (!v) return;
+  S.prevPanel = document.querySelector('.panel.active')?.id.replace('panel-','') || 'dashboard';
 
   const kbLinks = v.kbs.map(k => kbRef(k)).join('  ') || '<em style="color:var(--muted)">Aucun KB identifié</em>';
-
   const prods = v.products.slice(0,12).join(', ') +
     (v.products.length > 12 ? ` … +${v.products.length-12}` : '');
 
-  document.getElementById('modalTitle').innerHTML =
-    `<span class="cveid">${v.cveId}</span> &nbsp;<span class="${bc(v.severity)}">${v.severity}</span>`;
-
-  document.getElementById('modalBody').innerHTML = `
+  document.getElementById('cveDetailContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap">
+      <span class="cveid" style="font-size:1.4rem;font-weight:700">${v.cveId}</span>
+      <span class="${bc(v.severity)}">${v.severity}</span>
+      ${v.exploited ? '<span class="b b-exp">🚨 EXPLOIT</span>' : ''}
+      ${v.pubDisc ? '<span class="b b-pub">PUBLIC</span>' : ''}
+    </div>
     <div class="msec"><h4>Titre</h4><p>${v.title}</p></div>
     ${v.desc ? `<div class="msec"><h4>Description</h4>
       <p style="font-size:.82rem;color:var(--muted)">${v.desc.substring(0,500)}${v.desc.length>500?'…':''}</p>
     </div>` : ''}
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px">
-      <div class="msec"><h4>CVSS</h4><strong style="font-size:1.4rem">${v.cvss || '—'}</strong></div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+      <div class="msec"><h4>CVSS</h4><strong style="font-size:2rem">${v.cvss || '—'}</strong></div>
       <div class="msec"><h4>Exploitée</h4>${v.exploited ?
         '<span class="b b-exp">🚨 OUI</span>' : '<span style="color:var(--green)">Non</span>'}</div>
       <div class="msec"><h4>Divulguée</h4>${v.pubDisc ?
@@ -1178,21 +1189,23 @@ function showCVE(id) {
     <div class="msec"><h4>KBs correctifs (${v.kbs.length})</h4><p>${kbLinks}</p></div>
     <div class="msec"><h4>Produits affectés (${v.products.length})</h4>
       <p style="font-size:.8rem;color:var(--muted)">${prods || '—'}</p></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
       <a href="https://msrc.microsoft.com/update-guide/vulnerability/${v.cveId}" target="_blank">
         <button>🔗 MSRC Advisory</button></a>
       <a href="https://nvd.nist.gov/vuln/detail/${v.cveId}" target="_blank">
         <button class="sec">🔗 NVD</button></a>
-      <button class="sec" onclick="closeModal();quickCVE('${v.cveId}')">💻 Générer PS Script</button>
+      <button class="sec" onclick="quickCVE('${v.cveId}')">💻 Générer PS Script</button>
     </div>`;
 
-  document.getElementById('overlay').classList.add('open');
+  document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-cve-detail').classList.add('active');
+  window.scrollTo(0, 0);
 }
 
 function showKB(kb) {
   const e = S.kbMap.get(kb); if (!e) return;
-  closeModal();
-  S.prevTab = document.querySelector('.tab.active')?.dataset.tab || 'dashboard';
+  S.prevPanel = document.querySelector('.panel.active')?.id.replace('panel-','') || 'dashboard';
 
   const crit = e.cves.filter(c => c.severity === 'Critical').length;
   const expl = e.cves.filter(c => c.exploited).length;
@@ -1234,12 +1247,12 @@ function showKB(kb) {
 }
 
 function goBack() {
-  const tab = S.prevTab || 'dashboard';
+  const panel = S.prevPanel || 'dashboard';
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  const btn = document.querySelector(`.tab[data-tab="${tab}"]`);
+  const btn = document.querySelector(`.tab[data-tab="${panel}"]`);
   if (btn) btn.classList.add('active');
-  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('panel-' + panel).classList.add('active');
   window.scrollTo(0, 0);
 }
 
