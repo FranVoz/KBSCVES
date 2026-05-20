@@ -322,48 +322,61 @@ if (-not (Test-Path $jsonPath)) { Write-Error "Fichier introuvable : $jsonPath";
 
 $data = Get-JsonFile $jsonPath
 
-# Charger le cache existant
-$cveDetection = [ordered]@{}
-if ($data.PSObject.Properties["cveDetection"] -and $null -ne $data.cveDetection) {
-    $data.cveDetection.PSObject.Properties | ForEach-Object {
-        $cveDetection[$_.Name] = $_.Value
+# Cache local persistant (toutes lunes confondues, survit aux re-fetch des données)
+$cacheFile = Join-Path $dataDir "_detection-cache.json"
+$cache = [ordered]@{}
+if (Test-Path $cacheFile) {
+    $cacheData = Get-Content $cacheFile -Raw -Encoding UTF8 | ConvertFrom-Json
+    if ($cacheData) {
+        $cacheData.PSObject.Properties | ForEach-Object { $cache[$_.Name] = $_.Value }
     }
 }
 
 $total   = $data.vulns.Count
 $covered = 0
 $failed  = 0
-$skipped = 0
+$fromCache = 0
 
-$cached    = $cveDetection.Count
-$toProcess = @($data.vulns | Where-Object { $Force -or $null -eq $cveDetection[$_.cveId] })
+$cachedForMonth = @($data.vulns | Where-Object { $null -ne $cache[$_.cveId] }).Count
+$toQuery = @($data.vulns | Where-Object { $Force -or $null -eq $cache[$_.cveId] }).Count
 
 Write-Host ""
 Write-Host "Génération des scripts de détection OVAL pour $total CVEs ($Month)" -ForegroundColor Cyan
 Write-Host "Source : CIS OVAL Repository (GitHub)" -ForegroundColor Gray
-Write-Host "Cache : $cached / $total CVEs déjà traités — $($toProcess.Count) à traiter$(if ($Force) {' (-Force actif)'})" -ForegroundColor DarkGray
+Write-Host "Cache local ($cacheFile) : $($cache.Count) CVEs au total" -ForegroundColor DarkGray
+Write-Host "Pour ce mois : $cachedForMonth en cache, $toQuery à requêter$(if ($Force) {' (-Force actif)'})" -ForegroundColor DarkGray
 if (-not $GithubToken) {
-    Write-Host "⚠️  Pas de -GithubToken : limite 60 req/h. Recommandé pour $($toProcess.Count) CVEs." -ForegroundColor Yellow
+    Write-Host "⚠️  Pas de -GithubToken : limite 60 req/h. Recommandé pour $toQuery CVEs." -ForegroundColor Yellow
 }
 Write-Host ""
 
+# cveDetection du mois : reconstruit depuis le cache + nouvelles requêtes
+$cveDetection = [ordered]@{}
 $i = 0
 
-foreach ($vuln in $toProcess) {
+foreach ($vuln in $data.vulns) {
     $i++
     $cveId = $vuln.cveId
 
-    if (-not $Force -and $null -ne $cveDetection[$cveId]) {
-        Write-Host "[$i/$($toProcess.Count)] $cveId — cache ($($cveDetection[$cveId].source))" -ForegroundColor DarkGray
+    # 1. Servir depuis le cache si présent (et pas -Force)
+    if (-not $Force -and $null -ne $cache[$cveId]) {
+        $cveDetection[$cveId] = $cache[$cveId]
+        $src = $cache[$cveId].source
+        if ($src -eq "not-found") {
+            Write-Host "[$i/$total] $cveId — déjà non trouvé (cache), ignoré" -ForegroundColor DarkGray
+        } else {
+            Write-Host "[$i/$total] $cveId — cache ($src)" -ForegroundColor DarkGray
+        }
+        $fromCache++
         continue
     }
 
-    Write-Host "[$i/$($toProcess.Count)] " -NoNewline
+    Write-Host "[$i/$total] " -NoNewline
 
     $result = Find-OVALForCVE $cveId
 
     if ($result) {
-        $cveDetection[$cveId] = [ordered]@{
+        $entry = [ordered]@{
             source = $result.source
             file   = $result.file
             script = $result.script
@@ -389,14 +402,14 @@ if (`$manquants.Count -eq 0) {
     Write-Host "⚠️  VULNÉRABLE - $cveId : KBs manquants : `$(`$manquants -join ', ')" -ForegroundColor Red
 }
 "@
-            $cveDetection[$cveId] = [ordered]@{
+            $entry = [ordered]@{
                 source = "kb-fallback"
                 file   = ""
                 script = $fallback
             }
         } else {
             # Aucune source disponible — mise en cache pour éviter re-requête
-            $cveDetection[$cveId] = [ordered]@{
+            $entry = [ordered]@{
                 source = "not-found"
                 file   = ""
                 script = ""
@@ -405,7 +418,12 @@ if (`$manquants.Count -eq 0) {
         $failed++
     }
 
-    # Sauvegarder après chaque CVE pour préserver la progression en cas d'interruption
+    # Écrire dans le cache local ET le cveDetection du mois
+    $cache[$cveId]        = $entry
+    $cveDetection[$cveId] = $entry
+
+    # Sauvegarder après chaque CVE (cache + données mois) pour préserver la progression
+    $cache | ConvertTo-Json -Depth 15 | Set-Content $cacheFile -Encoding UTF8
     $data | Add-Member -NotePropertyName cveDetection -NotePropertyValue $cveDetection -Force
     Save-JsonFile $jsonPath $data
 
@@ -413,11 +431,13 @@ if (`$manquants.Count -eq 0) {
     Start-Sleep -Milliseconds 2100
 }
 
+# Sauvegarde finale
+$cache | ConvertTo-Json -Depth 15 | Set-Content $cacheFile -Encoding UTF8
 $data | Add-Member -NotePropertyName cveDetection -NotePropertyValue $cveDetection -Force
 Save-JsonFile $jsonPath $data
 
 Write-Host ""
-Write-Host "✅ Terminé : $covered OVAL, $failed fallback/introuvable ($cached en cache, $total total)" -ForegroundColor Green
+Write-Host "✅ Terminé : $covered OVAL, $failed fallback/introuvable, $fromCache servis du cache ($total total)" -ForegroundColor Green
 Write-Host "   Fichier mis à jour : $jsonPath"
 Write-Host ""
 Write-Host "Prochaine étape :" -ForegroundColor Yellow
