@@ -561,7 +561,7 @@ foreach ($pc in $Computers) {
 // ══════════════════════════════════════════════════════════════════
 //  VERSION — bump on each modification
 // ══════════════════════════════════════════════════════════════════
-const APP_VERSION = 'v1.2.0';
+const APP_VERSION = 'v1.2.1';
 
 // ══════════════════════════════════════════════════════════════════
 //  STATE
@@ -1055,6 +1055,7 @@ function renderKBs() {
       <td><div class="tags">${prods}${more}</div></td>
       <td>
         <a href="https://catalog.update.microsoft.com/Search.aspx?q=${e.kb}" target="_blank"
+           title="Voir ${e.kb} dans le Microsoft Update Catalog"
            onclick="event.stopPropagation()" style="font-size:.72rem;color:var(--blue);text-decoration:none">📦</a>
       </td>
     </tr>`;
@@ -1177,6 +1178,7 @@ function renderMap() {
       <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end">
         <button class="sec sm" onclick="quickKB('${e.kb}')">💻 PS Script</button>
         <a href="https://catalog.update.microsoft.com/Search.aspx?q=${e.kb}" target="_blank"
+           title="Voir ${e.kb} dans le Microsoft Update Catalog"
            style="font-size:.72rem;color:var(--blue);text-decoration:none">📦 Catalog</a>
       </div>
     </div>`;
@@ -1365,7 +1367,8 @@ function showKB(kb) {
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
       <a href="https://support.microsoft.com/kb/${kb.replace('KB','')}" target="_blank">
         <button>🔗 Article KB Microsoft</button></a>
-      <a href="https://catalog.update.microsoft.com/Search.aspx?q=${kb}" target="_blank">
+      <a href="https://catalog.update.microsoft.com/Search.aspx?q=${kb}" target="_blank"
+         title="Voir ${kb} dans le Microsoft Update Catalog">
         <button class="sec">📦 Update Catalog</button></a>
     </div>`;
 
