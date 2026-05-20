@@ -20,7 +20,7 @@ param(
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-# ── Helpers ──────────────────────────────────────────────────────────────────
+# -- Helpers ------------------------------------------------------------------
 
 function Get-JsonFile([string]$path) {
     Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -51,7 +51,7 @@ function Get-OVALXml([string]$rawUrl) {
     } catch { return $null }
 }
 
-# ── Parse OVAL XML → extraire les tests pour un CVE ──────────────────────────
+# -- Parse OVAL XML → extraire les tests pour un CVE --------------------------
 
 function Get-OVALDefinitionForCVE([xml]$oval, [string]$cveId) {
     # Cherche la définition référençant ce CVE
@@ -102,7 +102,7 @@ function Get-StateById([xml]$oval, [string]$id) {
     return $null
 }
 
-# ── Convertir tests OVAL → PowerShell ────────────────────────────────────────
+# -- Convertir tests OVAL → PowerShell ----------------------------------------
 
 function Convert-RegistryTest($test, [xml]$oval) {
     $obj = Get-ObjectById $oval $test.object.object_ref
@@ -187,7 +187,7 @@ function Convert-FileTest($test, [xml]$oval) {
                     "equals"              { "$varName -eq '$sval'" }
                     default               { "$varName -eq '$sval'" }
                 }
-                $lines += "# Fichier : $fullPath — version $op $sval"
+                $lines += "# Fichier : $fullPath - version $op $sval"
                 $lines += "`$checks += [bool]($cond)"
             }
         }
@@ -250,17 +250,17 @@ $($checks -join "`n`n")
 
 # Résultat
 if (`$checks.Count -eq 0) {
-    Write-Host "ℹ️  Impossible de déterminer — aucune condition OVAL évaluable" -ForegroundColor Yellow
+    Write-Host "ℹ️  Impossible de déterminer - aucune condition OVAL évaluable" -ForegroundColor Yellow
 } elseif (`$checks -contains `$true) {
-    Write-Host "⚠️  VULNÉRABLE — $cveId : condition(s) de vulnérabilité vérifiée(s)" -ForegroundColor Red
+    Write-Host "⚠️  VULNÉRABLE - $cveId : condition(s) de vulnérabilité vérifiée(s)" -ForegroundColor Red
 } else {
-    Write-Host "✅ PROTÉGÉ   — $cveId : aucune condition de vulnérabilité active" -ForegroundColor Green
+    Write-Host "✅ PROTÉGÉ   - $cveId : aucune condition de vulnérabilité active" -ForegroundColor Green
 }
 "@
     return $script
 }
 
-# ── Recherche OVAL sur GitHub ─────────────────────────────────────────────────
+# -- Recherche OVAL sur GitHub -------------------------------------------------
 
 function Find-OVALForCVE([string]$cveId) {
     Write-Host "  OVAL ← $cveId ... " -NoNewline
@@ -292,7 +292,7 @@ function Find-OVALForCVE([string]$cveId) {
     return $null
 }
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# -- Main ----------------------------------------------------------------------
 
 $dataDir = Join-Path $PSScriptRoot "data"
 if (-not $Month) {
@@ -362,9 +362,9 @@ foreach ($vuln in $data.vulns) {
 `$installes = `$Updates | ForEach-Object { `$_.KBArticleIDs } | ForEach-Object { "KB`$_" }
 `$manquants = `$kbCorrecifs | Where-Object { `$installes -notcontains `$_ }
 if (`$manquants.Count -eq 0) {
-    Write-Host "✅ PROTÉGÉ   — $cveId : correctifs présents" -ForegroundColor Green
+    Write-Host "✅ PROTÉGÉ   - $cveId : correctifs présents" -ForegroundColor Green
 } else {
-    Write-Host "⚠️  VULNÉRABLE — $cveId : KBs manquants : `$(`$manquants -join ', ')" -ForegroundColor Red
+    Write-Host "⚠️  VULNÉRABLE - $cveId : KBs manquants : `$(`$manquants -join ', ')" -ForegroundColor Red
 }
 "@
             $cveDetection[$cveId] = [ordered]@{
