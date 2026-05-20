@@ -1160,6 +1160,20 @@ function filterMap(q) {
 // ══════════════════════════════════════════════════════════════════
 //  MODALS
 // ══════════════════════════════════════════════════════════════════
+function buildKbDetectScript(kb) {
+  return `# Détection ${kb}
+# Vérifie si la mise à jour est installée sur la machine locale
+$kb = "${kb}"
+
+$installe = Get-HotFix | Where-Object { $_.HotFixID -eq $kb }
+
+if ($installe) {
+    Write-Host "✅ INSTALLÉ  — $kb est présent (installé le $($installe.InstalledOn))." -ForegroundColor Green
+} else {
+    Write-Host "⚠️  ABSENT   — $kb n'est pas installé sur cette machine." -ForegroundColor Red
+}`;
+}
+
 function buildCveDetectScript(cveId, kbs) {
   if (!kbs.length) return `# Aucun KB correctif identifié pour ${cveId}\nWrite-Host "Impossible de vérifier : aucun KB associé" -ForegroundColor Yellow`;
   const kbArray = kbs.map(k => `"${k}"`).join(', ');
@@ -1261,12 +1275,20 @@ function showKB(kb) {
     <div class="msec"><h4>Produits (${e.products.size})</h4>
       <p style="font-size:.82rem;color:var(--muted)">${[...e.products].join(', ')}</p>
     </div>
+    <div class="msec" style="margin-top:20px">
+      <div class="codehdr">
+        <div><div class="codetitle">🔍 Script de détection PowerShell</div>
+          <div class="codedesc">Vérifie si ${kb} est installé sur la machine locale</div>
+        </div>
+        <button class="copybtn" onclick="copyEl('ps-kb-${kb.replace(/\W/g,'')}',this)">📋 Copier</button>
+      </div>
+      <pre class="codeblock" id="ps-kb-${kb.replace(/\W/g,'')}">${buildKbDetectScript(kb).replace(/</g,'&lt;').replace(/>/g,'&gt;')}</pre>
+    </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">
       <a href="https://support.microsoft.com/search/results?query=${kb}" target="_blank">
         <button>🔗 Support Microsoft</button></a>
       <a href="https://catalog.update.microsoft.com/Search.aspx?q=${kb}" target="_blank">
         <button class="sec">📦 Update Catalog</button></a>
-      <button class="sec" onclick="quickKB('${kb}')">💻 Générer PS Script</button>
     </div>`;
 
   document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
