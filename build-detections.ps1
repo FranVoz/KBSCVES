@@ -311,34 +311,40 @@ if (-not (Test-Path $jsonPath)) { Write-Error "Fichier introuvable : $jsonPath";
 
 $data = Get-JsonFile $jsonPath
 
-# Vérifier si déjà traité
-if (-not $Force -and $data.PSObject.Properties["cveDetection"]) {
-    $existing = ($data.cveDetection.PSObject.Properties | Measure-Object).Count
-    if ($existing -gt 0) {
-        Write-Host "cveDetection déjà présent ($existing CVEs). Utilisez -Force pour régénérer." -ForegroundColor Yellow
-        exit 0
+# Charger le cache existant
+$cveDetection = [ordered]@{}
+if ($data.PSObject.Properties["cveDetection"]) {
+    $data.cveDetection.PSObject.Properties | ForEach-Object {
+        $cveDetection[$_.Name] = $_.Value
     }
 }
 
 $total   = $data.vulns.Count
 $covered = 0
 $failed  = 0
+$skipped = 0
+
+$cached     = ($cveDetection.Keys | Measure-Object).Count
+$toProcess  = $data.vulns | Where-Object { $Force -or -not $cveDetection.Contains($_.cveId) }
+$toProcess  = @($toProcess)
 
 Write-Host ""
 Write-Host "Génération des scripts de détection OVAL pour $total CVEs ($Month)" -ForegroundColor Cyan
 Write-Host "Source : CIS OVAL Repository (GitHub)" -ForegroundColor Gray
+if ($cached -gt 0 -and -not $Force) {
+    Write-Host "Cache : $cached CVEs déjà traités, $($toProcess.Count) restants. (-Force pour tout régénérer)" -ForegroundColor DarkGray
+}
 if (-not $GithubToken) {
-    Write-Host "⚠️  Pas de -GithubToken : limite 60 req/h. Recommandé pour $total CVEs." -ForegroundColor Yellow
+    Write-Host "⚠️  Pas de -GithubToken : limite 60 req/h. Recommandé pour $($toProcess.Count) CVEs." -ForegroundColor Yellow
 }
 Write-Host ""
 
-$cveDetection = [ordered]@{}
 $i = 0
 
-foreach ($vuln in $data.vulns) {
+foreach ($vuln in $toProcess) {
     $i++
     $cveId = $vuln.cveId
-    Write-Host "[$i/$total] " -NoNewline
+    Write-Host "[$i/$($toProcess.Count)] " -NoNewline
 
     $result = Find-OVALForCVE $cveId
 
@@ -374,6 +380,13 @@ if (`$manquants.Count -eq 0) {
                 file   = ""
                 script = $fallback
             }
+        } else {
+            # Aucune source disponible — mise en cache pour éviter re-requête
+            $cveDetection[$cveId] = [ordered]@{
+                source = "not-found"
+                file   = ""
+                script = ""
+            }
         }
         $failed++
     }
@@ -387,7 +400,7 @@ $data | Add-Member -NotePropertyName cveDetection -NotePropertyValue $cveDetecti
 Save-JsonFile $jsonPath $data
 
 Write-Host ""
-Write-Host "✅ Terminé : $covered/$total OVAL, $failed fallback KB" -ForegroundColor Green
+Write-Host "✅ Terminé : $covered OVAL, $failed fallback/introuvable ($cached en cache, $total total)" -ForegroundColor Green
 Write-Host "   Fichier mis à jour : $jsonPath"
 Write-Host ""
 Write-Host "Prochaine étape :" -ForegroundColor Yellow
