@@ -313,7 +313,7 @@ $data = Get-JsonFile $jsonPath
 
 # Charger le cache existant
 $cveDetection = [ordered]@{}
-if ($data.PSObject.Properties["cveDetection"]) {
+if ($data.PSObject.Properties["cveDetection"] -and $null -ne $data.cveDetection) {
     $data.cveDetection.PSObject.Properties | ForEach-Object {
         $cveDetection[$_.Name] = $_.Value
     }
@@ -324,16 +324,13 @@ $covered = 0
 $failed  = 0
 $skipped = 0
 
-$cached     = ($cveDetection.Keys | Measure-Object).Count
-$toProcess  = $data.vulns | Where-Object { $Force -or -not $cveDetection.Contains($_.cveId) }
-$toProcess  = @($toProcess)
+$cached    = $cveDetection.Count
+$toProcess = @($data.vulns | Where-Object { $Force -or $null -eq $cveDetection[$_.cveId] })
 
 Write-Host ""
 Write-Host "Génération des scripts de détection OVAL pour $total CVEs ($Month)" -ForegroundColor Cyan
 Write-Host "Source : CIS OVAL Repository (GitHub)" -ForegroundColor Gray
-if ($cached -gt 0 -and -not $Force) {
-    Write-Host "Cache : $cached CVEs déjà traités, $($toProcess.Count) restants. (-Force pour tout régénérer)" -ForegroundColor DarkGray
-}
+Write-Host "Cache : $cached / $total CVEs déjà traités — $($toProcess.Count) à traiter$(if ($Force) {' (-Force actif)'})" -ForegroundColor DarkGray
 if (-not $GithubToken) {
     Write-Host "⚠️  Pas de -GithubToken : limite 60 req/h. Recommandé pour $($toProcess.Count) CVEs." -ForegroundColor Yellow
 }
