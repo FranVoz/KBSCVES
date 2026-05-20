@@ -391,11 +391,14 @@ if (`$manquants.Count -eq 0) {
         $failed++
     }
 
+    # Sauvegarder après chaque CVE pour préserver la progression en cas d'interruption
+    $data | Add-Member -NotePropertyName cveDetection -NotePropertyValue $cveDetection -Force
+    Save-JsonFile $jsonPath $data
+
     # Search API : 30 req/min même avec token → pause fixe 2,1 s
     Start-Sleep -Milliseconds 2100
 }
 
-# Sauvegarder
 $data | Add-Member -NotePropertyName cveDetection -NotePropertyValue $cveDetection -Force
 Save-JsonFile $jsonPath $data
 
