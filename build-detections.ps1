@@ -341,6 +341,12 @@ $i = 0
 foreach ($vuln in $toProcess) {
     $i++
     $cveId = $vuln.cveId
+
+    if (-not $Force -and $null -ne $cveDetection[$cveId]) {
+        Write-Host "[$i/$($toProcess.Count)] $cveId — cache ($($cveDetection[$cveId].source))" -ForegroundColor DarkGray
+        continue
+    }
+
     Write-Host "[$i/$($toProcess.Count)] " -NoNewline
 
     $result = Find-OVALForCVE $cveId
