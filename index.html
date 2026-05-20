@@ -563,7 +563,7 @@ foreach ($pc in $Computers) {
 // ══════════════════════════════════════════════════════════════════
 //  VERSION — bump on each modification
 // ══════════════════════════════════════════════════════════════════
-const APP_VERSION = 'v1.3.2';
+const APP_VERSION = 'v1.4.0';
 
 // ══════════════════════════════════════════════════════════════════
 //  STATE
@@ -1272,9 +1272,9 @@ function showCVE(id) {
       ${v.pubDisc ? '<span class="b b-pub">PUBLIC</span>' : ''}
     </div>
     <div class="msec"><h4>Titre</h4><p>${v.title}</p></div>
-    ${v.desc ? `<div class="msec"><h4>Description</h4>
-      <p style="font-size:.82rem;color:var(--muted)">${v.desc.substring(0,500)}${v.desc.length>500?'…':''}</p>
-    </div>` : ''}
+    <div class="msec"><h4>Description</h4>
+      <p id="cveDescBody" style="font-size:.82rem;color:var(--muted)">${v.desc ? (v.desc.substring(0,800)+(v.desc.length>800?'…':'')) : 'Chargement depuis NVD…'}</p>
+    </div>
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
       <div class="msec"><h4>CVSS</h4><strong style="font-size:2rem">${v.cvss || '—'}</strong></div>
       <div class="msec"><h4>Exploitée</h4>${v.exploited ?
@@ -1353,15 +1353,31 @@ function cpeRange(m) {
   if (m.versionEndExcluding)   parts.push(`< ${m.versionEndExcluding}`);
   return parts.join(', ');
 }
+const _nvdDescCache = {};
+function setCveDesc(text) {
+  const el = document.getElementById('cveDescBody');
+  if (el) el.textContent = text;
+}
 async function loadNvdConfigs(cveId) {
   const body = () => document.getElementById('nvdConfigBody');
   const render = html => { const el = body(); if (el) el.innerHTML = html; };
+
+  // Description (cache séparé)
+  if (_nvdDescCache[cveId] !== undefined) setCveDesc(_nvdDescCache[cveId]);
 
   if (_nvdConfigCache[cveId]) { render(_nvdConfigCache[cveId]); return; }
 
   try {
     const data = await apiFetch(`${NVD_API}?cveId=${cveId}`);
     const cve = data.vulnerabilities?.[0]?.cve;
+    if (_nvdDescCache[cveId] === undefined) {
+      const en = (cve?.descriptions || []).find(d => d.lang === 'en') || (cve?.descriptions || [])[0];
+      const desc = en?.value || 'Aucune description disponible sur NVD.';
+      _nvdDescCache[cveId] = desc;
+      // ne pas écraser une description MSRC déjà présente
+      const el = document.getElementById('cveDescBody');
+      if (el && el.textContent.trim() === 'Chargement depuis NVD…') el.textContent = desc;
+    }
     const configs = cve?.configurations || [];
     const matches = [];
     configs.forEach(cfg => (cfg.nodes || []).forEach(n => (n.cpeMatch || []).forEach(m => {
@@ -1387,6 +1403,8 @@ async function loadNvdConfigs(cveId) {
     _nvdConfigCache[cveId] = html; render(html);
   } catch (e) {
     render(`<em>NVD inaccessible (${e.message}). <a href="https://nvd.nist.gov/vuln/detail/${cveId}" target="_blank" style="color:var(--blue)">Voir sur NVD ↗</a></em>`);
+    const el = document.getElementById('cveDescBody');
+    if (el && el.textContent.trim() === 'Chargement depuis NVD…') el.textContent = 'Description indisponible (NVD inaccessible).';
   }
 }
 
