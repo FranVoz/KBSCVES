@@ -1021,15 +1021,14 @@ function renderKBs() {
       <td>${e.cves.filter(c=>c.exploited).length||'<span style="color:var(--green)">—</span>'}</td>
       <td><div class="tags">${prods}${more}</div></td>
       <td>
-        <button class="sec sm" onclick="event.stopPropagation();quickKB('${e.kb}')">💻 PS</button>
         <a href="https://catalog.update.microsoft.com/Search.aspx?q=${e.kb}" target="_blank"
-           onclick="event.stopPropagation()" style="margin-left:4px;font-size:.72rem;color:var(--blue);text-decoration:none">📦</a>
+           onclick="event.stopPropagation()" style="font-size:.72rem;color:var(--blue);text-decoration:none">📦</a>
       </td>
     </tr>`;
   }).join('');
 
   document.getElementById('kbBox').innerHTML = `<table>
-    <thead><tr><th>KB Article</th><th>Sévérité max</th><th>CVEs</th><th>Exploitées</th><th>Produits</th><th>Actions</th></tr></thead>
+    <thead><tr><th>KB Article</th><th>Sévérité max</th><th>CVEs</th><th>Exploitées</th><th>Produits</th><th></th></tr></thead>
     <tbody>${rows}</tbody></table>`;
   document.getElementById('kbPager').innerHTML = pages <= 1 ? '' :
     `<div class="pager">
@@ -1093,12 +1092,11 @@ function renderCVEs() {
       <td>${v.cvss ? `<strong style="color:${cvssColor(v.cvss)}">${v.cvss}</strong>` : '—'}</td>
       <td><div class="tags">${kbHtml}</div></td>
       <td>${flags}</td>
-      <td><button class="sec sm" onclick="event.stopPropagation();quickCVE('${v.cveId}')">💻 PS</button></td>
     </tr>`;
   }).join('');
 
   document.getElementById('cveBox').innerHTML = `<table>
-    <thead><tr><th>CVE ID</th><th>Titre</th><th>Sévérité</th><th>CVSS</th><th>KBs correctifs</th><th>Statut</th><th></th></tr></thead>
+    <thead><tr><th>CVE ID</th><th>Titre</th><th>Sévérité</th><th>CVSS</th><th>KBs correctifs</th><th>Statut</th></tr></thead>
     <tbody>${rows}</tbody></table>`;
   document.getElementById('cvePager').innerHTML = pages <= 1 ? '' :
     `<div class="pager">
