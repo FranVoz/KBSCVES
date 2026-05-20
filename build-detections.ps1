@@ -18,6 +18,8 @@ param(
 )
 
 Set-StrictMode -Version Latest
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding             = [System.Text.Encoding]::UTF8
 $ErrorActionPreference = "Stop"
 
 # -- Helpers ------------------------------------------------------------------
