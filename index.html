@@ -566,9 +566,11 @@ const S = {
   kbMap:   new Map(),
   prodMap: new Map(),
   month:   null,
-  kbPage:  1,
-  cvePage: 1,
+  kbPage:    1,
+  cvePage:   1,
   prevPanel: 'dashboard',
+  cveStatus: {},   // { cveId: { status, missingKbs[] } } — from scan-vulns.ps1
+  scanMeta:  null, // { scanned, scanHost }
 };
 
 // ══════════════════════════════════════════════════════════════════
@@ -864,7 +866,15 @@ async function loadMonth(monthId) {
     const r = await fetch(`data/${monthId}.json`);
     if (r.ok) {
       const cached = await r.json();
-      result = { vulns: cached.vulns, pm: new Map(), fetched: cached.fetched };
+      result = {
+        vulns:      cached.vulns,
+        pm:         new Map(),
+        fetched:    cached.fetched,
+        cveStatus:  cached.cveStatus  || {},
+        scanMeta:   (cached.scanned && cached.scanHost)
+                      ? { scanned: cached.scanned, scanHost: cached.scanHost }
+                      : null,
+      };
       source = 'cache';
     }
   } catch {}
@@ -888,9 +898,11 @@ async function loadMonth(monthId) {
     }
   }
 
-  S.vulns   = result.vulns;
-  S.prodMap = result.pm;
-  S.kbMap   = buildKBMap(result.vulns);
+  S.vulns     = result.vulns;
+  S.prodMap   = result.pm;
+  S.kbMap     = buildKBMap(result.vulns);
+  S.cveStatus = result.cveStatus || {};
+  S.scanMeta  = result.scanMeta  || null;
 
   if (source === 'demo') {
     const b = document.createElement('div');
@@ -1235,6 +1247,31 @@ function showCVE(id) {
     <div class="msec"><h4>KBs correctifs (${v.kbs.length})</h4><p>${kbLinks}</p></div>
     <div class="msec"><h4>Produits affectés (${v.products.length})</h4>
       <p style="font-size:.8rem;color:var(--muted)">${prods || '—'}</p></div>
+    ${(() => {
+      if (!S.scanMeta) {
+        return `<div class="msec" style="margin-top:20px">
+          <h4>🖥️ Statut sur votre machine</h4>
+          <div class="banner" style="margin:0;background:rgba(88,166,255,.08);border-color:rgba(88,166,255,.25);color:var(--muted)">
+            Aucun scan disponible — exécutez <code style="background:var(--bg3);padding:1px 5px;border-radius:3px">scan-vulns.ps1</code> localement puis commitez.
+          </div></div>`;
+      }
+      const st = S.cveStatus[v.cveId];
+      if (!st) return '';
+      const d = new Date(S.scanMeta.scanned).toLocaleString('fr-FR',{day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      const vuln = st.status === 'vulnerable';
+      const unk  = st.status === 'unknown';
+      const bg      = vuln ? 'rgba(248,81,73,.1)'   : unk ? 'rgba(88,166,255,.08)'   : 'rgba(63,185,80,.08)';
+      const border  = vuln ? 'rgba(248,81,73,.3)'   : unk ? 'rgba(88,166,255,.25)'   : 'rgba(63,185,80,.3)';
+      const color   = vuln ? 'var(--red)'            : unk ? 'var(--muted)'            : 'var(--green)';
+      const icon    = vuln ? '⚠️ VULNÉRABLE'         : unk ? 'ℹ️ INCONNU'              : '✅ PROTÉGÉ';
+      const detail  = vuln ? ` — KBs manquants : <strong>${st.missingKbs.join(', ')}</strong>` : unk ? ' — aucun KB correctif identifié' : ' — tous les correctifs sont installés';
+      return `<div class="msec" style="margin-top:20px">
+        <h4>🖥️ Statut sur ${S.scanMeta.scanHost}</h4>
+        <div style="background:${bg};border:1px solid ${border};color:${color};padding:10px 14px;border-radius:6px;font-size:.84rem">
+          <strong>${icon}</strong>${detail}<br>
+          <span style="font-size:.75rem;opacity:.7">Scanné le ${d}</span>
+        </div></div>`;
+    })()}
     <div class="msec" style="margin-top:20px">
       <div class="codehdr">
         <div><div class="codetitle">🔍 Script de détection PowerShell</div>
